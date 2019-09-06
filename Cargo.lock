@@ -5076,6 +5076,7 @@ dependencies = [
 name = "srml-libra"
 version = "2.0.0"
 dependencies = [
+ "config 0.1.0 (git+https://github.com/prz23/libra.git)",
  "executor 0.1.0 (git+https://github.com/prz23/libra.git)",
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "parity-scale-codec 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5093,6 +5094,7 @@ dependencies = [
  "substrate-inherents 2.0.0",
  "substrate-primitives 2.0.0",
  "types 0.1.0 (git+https://github.com/prz23/libra.git)",
+ "vm_runtime 0.1.0 (git+https://github.com/prz23/libra.git)",
 ]
 
 [[package]]

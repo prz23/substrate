@@ -72,6 +72,10 @@ mod tests;
 use types::transaction::SignedTransaction;
 #[cfg(feature = "std")]
 use executor::*;
+#[cfg(feature = "std")]
+use config::config::VMConfig;
+#[cfg(feature = "std")]
+use vm_runtime::MoveVM;
 
 
 pub trait Trait: timestamp::Trait {
@@ -101,7 +105,7 @@ decl_module! {
 impl<T: Trait> Module<T> {
 
 	fn initialize_authorities() {
-
+		let vm = MoveVM::new(&VMConfig::default());
 	}
 }
 

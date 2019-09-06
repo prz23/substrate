@@ -21,6 +21,8 @@ timestamp = { package = "srml-timestamp", path = "../timestamp", default-feature
 
 types =  { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
 executor = { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
+vm_runtime = { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
+config = { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
 
 [dev-dependencies]
 lazy_static = "1.0"
@@ -43,4 +45,6 @@ std = [
 	"timestamp/std",
 	"types",
 	"executor",
+	"vm_runtime",
+	"config"
 ]
