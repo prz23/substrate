@@ -266,8 +266,8 @@ use sr_primitives::{
 
 #[cfg(feature = "std")]
 use types::transaction::SignedTransaction;
-#[cfg(feature = "std")]
-use executor::*;
+//#[cfg(feature = "std")]
+//use executor::*;
 
 /// Our module's configuration trait. All our types and consts go in here. If the
 /// module is dependent on specific other modules, then their configuration traits
