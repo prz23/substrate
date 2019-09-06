@@ -76,7 +76,7 @@ use executor::*;
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
-	type AuthorityId: Member + Parameter + AppPublic + Default;
+	type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 }
 
 decl_storage! {
@@ -94,7 +94,7 @@ decl_module! {
 }
 
 impl<T: Trait> Module<T> {
-	
+
 	fn initialize_authorities(authorities: &[T::AuthorityId]) {
 		if !authorities.is_empty() {
 			assert!(<Authorities<T>>::get().is_empty(), "Authorities are already initialized!");
