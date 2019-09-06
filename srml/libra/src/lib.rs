@@ -51,7 +51,7 @@ use rstd::{result, prelude::*};
 use codec::{Encode, Decode};
 use support::{
 	decl_storage, decl_module, Parameter, storage::StorageValue, traits::{Get, FindAuthor},
-	ConsensusEngineId,
+	ConsensusEngineId,decl_event,
 };
 use app_crypto::AppPublic;
 use sr_primitives::{
