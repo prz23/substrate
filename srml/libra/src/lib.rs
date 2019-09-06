@@ -93,7 +93,7 @@ decl_module! {
 
 impl<T: Trait> Module<T> {
 
-	fn initialize_authorities(authorities: &[T::AuthorityId]) {
+	fn initialize_authorities() {
 
 	}
 }
