@@ -3,6 +3,15 @@
 :Revision: 0.2.0
 :toc:
 :sectnums:
+== Environment Set
+
+ from substrate ac6a2a783f0e1f4a814cf2add40275730cd41be1
+
+install cmake golang curl 
+RUN echo "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list \
+    && apt-get update && apt-get install -y protobuf-compiler/stretch-backports cmake golang curl \
+    && apt-get clean && rm -r /var/lib/apt/lists/*
+
 
 == Intro in one sentence
 
