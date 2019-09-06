@@ -46,5 +46,7 @@ std = [
 	"types",
 	"executor",
 	"vm_runtime",
-	"config"
+	"config",
+	"vm_runtime",
+	"config",
 ]
