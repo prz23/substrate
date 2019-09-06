@@ -14,9 +14,6 @@ sr-primitives = { path = "../../core/sr-primitives", default-features = false }
 support = { package = "srml-support", path = "../support", default-features = false }
 system = { package = "srml-system", path = "../system", default-features = false }
 
-types =  { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
-executor = { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
-
 [dev-dependencies]
 runtime-io ={ package = "sr-io", path = "../../core/sr-io", default-features = false }
 primitives = { package = "substrate-primitives",  path = "../../core/primitives" }
