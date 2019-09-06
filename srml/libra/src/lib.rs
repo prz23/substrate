@@ -84,8 +84,6 @@ decl_storage! {
 		/// The last timestamp.
 		LastTimestamp get(last) build(|_| 0.into()): T::Moment;
 
-		/// The current authorities
-		pub Authorities get(authorities): Vec<T::AuthorityId>;
 	}
 }
 
@@ -96,10 +94,7 @@ decl_module! {
 impl<T: Trait> Module<T> {
 
 	fn initialize_authorities(authorities: &[T::AuthorityId]) {
-		if !authorities.is_empty() {
-			assert!(<Authorities<T>>::get().is_empty(), "Authorities are already initialized!");
-			<Authorities<T>>::put_ref(authorities);
-		}
+
 	}
 }
 
