@@ -67,6 +67,7 @@ use substrate_consensus_aura_primitives::{AURA_ENGINE_ID, ConsensusLog, Authorit
 
 mod mock;
 mod tests;
+use system::Event;
 
 #[cfg(feature = "std")]
 use types::transaction::SignedTransaction;
