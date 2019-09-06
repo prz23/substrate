@@ -67,7 +67,6 @@ use substrate_consensus_aura_primitives::{AURA_ENGINE_ID, ConsensusLog, Authorit
 
 mod mock;
 mod tests;
-use system::Event;
 
 #[cfg(feature = "std")]
 use types::transaction::SignedTransaction;
@@ -87,6 +86,13 @@ decl_storage! {
 
 	}
 }
+
+
+decl_event!(
+	pub enum Event<T> where <T as system::Trait>::AccountId {
+		OfflineWarning(AccountId, u32),
+	}
+);
 
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin { }
