@@ -46,6 +46,8 @@ serde = { version = "1.0", optional = true }
 substrate-keyring = { path = "../../core/keyring", optional = true }
 substrate-session = { path = "../../core/session", default-features = false }
 
+example = { package = "srml-example", path = "../../srml/example", default-features = false }
+
 [build-dependencies]
 wasm-builder-runner = { package = "substrate-wasm-builder-runner", version = "1.0.2", path = "../../core/utils/wasm-builder-runner" }
 
@@ -93,4 +95,5 @@ std = [
 	"timestamp/std",
 	"treasury/std",
 	"version/std",
+	"example/std",
 ]

@@ -15,6 +15,7 @@ support = { package = "srml-support", path = "../support", default-features = fa
 system = { package = "srml-system", path = "../system", default-features = false }
 
 types =  { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
+executor = { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
 
 [dev-dependencies]
 runtime-io ={ package = "sr-io", path = "../../core/sr-io", default-features = false }
@@ -31,5 +32,4 @@ std = [
 	"support/std",
 	"sr-primitives/std",
 	"system/std",
-	"types",
 ]

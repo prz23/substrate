@@ -188,8 +188,6 @@ mod tests;
 
 pub use self::imbalances::{PositiveImbalance, NegativeImbalance};
 
-#[cfg(feature = "std")]
-use types::transaction::SignedTransaction;
 
 pub trait Subtrait<I: Instance = DefaultInstance>: system::Trait {
 	/// The balance of an account.
