@@ -104,6 +104,7 @@ decl_module! {
 
 impl<T: Trait> Module<T> {
 
+	#[cfg(feature = "std")]
 	fn initialize_authorities() {
 		let vm = MoveVM::new(&VMConfig::default());
 	}
