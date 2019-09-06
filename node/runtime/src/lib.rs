@@ -459,10 +459,6 @@ impl system::offchain::CreateTransaction<Runtime, UncheckedExtrinsic> for Runtim
 	}
 }
 
-impl example::Trait for Runtime {
-	type Event = Event;
-}
-
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
@@ -490,7 +486,7 @@ construct_runtime!(
 		ImOnline: im_online::{Module, Call, Storage, Event<T>, ValidateUnsigned, Config<T>},
 		AuthorityDiscovery: authority_discovery::{Module, Call, Config<T>},
 		Offences: offences::{Module, Call, Storage, Event},
-		Example: example::{Module, Call, Storage, Config, Event},
+
 	}
 );
 
