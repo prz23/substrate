@@ -106,6 +106,12 @@ decl_event!(
 
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+
+	    pub fn e2e_libra(origin){
+	       #[cfg(feature = "std")]
+	       Self::e2e_test();
+	    }
+	    
 	 }
 }
 
