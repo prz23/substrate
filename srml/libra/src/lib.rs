@@ -77,6 +77,14 @@ use config::config::VMConfig;
 #[cfg(feature = "std")]
 use vm_runtime::MoveVM;
 
+#[cfg(feature = "std")]
+use types::transaction::SignedTransaction;
+#[cfg(feature = "std")]
+use language_e2e_tests::{
+	account::AccountData,
+	common_transactions::peer_to_peer_txn,
+	executor::FakeExecutor,
+};
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
@@ -99,7 +107,12 @@ decl_event!(
 );
 
 decl_module! {
-	pub struct Module<T: Trait> for enum Call where origin: T::Origin { }
+	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
+	    #[cfg(feature = "std")]
+	    pub fn e2etest(){
+	        Self::e2e_test();
+	    }
+	 }
 }
 
 impl<T: Trait> Module<T> {
@@ -120,6 +133,10 @@ impl<T: Trait> Module<T> {
 
 	}
 
+	#[cfg(feature = "std")]
+	fn e2e_test(){
+
+	}
 
 }
 
