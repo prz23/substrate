@@ -50,6 +50,5 @@ std = [
 	"config",
 	"vm_runtime",
 	"config",
-	"language_e2e_tests",
 ]
 testing = ["language_e2e_tests/testing"]
