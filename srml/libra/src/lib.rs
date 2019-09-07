@@ -108,10 +108,6 @@ decl_event!(
 
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
-	    #[cfg(feature = "std")]
-	    pub fn e2etest(){
-	        Self::e2e_test();
-	    }
 	 }
 }
 
@@ -135,7 +131,24 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	fn e2e_test(){
+		let mut executor = FakeExecutor::from_genesis_file();
+		let sender = AccountData::new(1_000_000, 10);
+		let receiver = AccountData::new(100_000, 10);
+		executor.add_account_data(&sender);
 
+		executor.add_account_data(&receiver);
+
+		let transfer_amount = 1_000;
+		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
+
+		//println!("{:?}",txn);
+
+		// execute transaction
+		let txns: Vec<SignedTransaction> = vec![txn];
+		//这是执行入口了，此前的操作都需要用户来做
+		let output = executor.execute_block(txns);
+
+		println!("{:?}",output);
 	}
 
 }
