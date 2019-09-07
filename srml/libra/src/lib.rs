@@ -78,8 +78,6 @@ use config::config::VMConfig;
 use vm_runtime::MoveVM;
 
 #[cfg(feature = "std")]
-use types::transaction::SignedTransaction;
-#[cfg(feature = "std")]
 use language_e2e_tests::{
 	account::AccountData,
 	common_transactions::peer_to_peer_txn,
