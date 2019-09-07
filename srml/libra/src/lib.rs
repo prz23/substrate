@@ -69,7 +69,7 @@ mod mock;
 mod tests;
 
 #[cfg(feature = "std")]
-use types::transaction::SignedTransaction;
+use types::{account_address,transaction::SignedTransaction};
 #[cfg(feature = "std")]
 use executor::*;
 #[cfg(feature = "std")]
@@ -105,8 +105,21 @@ decl_module! {
 impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
-	fn initialize_authorities() {
+	fn execute_libra_block() {
 		let vm = MoveVM::new(&VMConfig::default());
+
 	}
+
+	#[cfg(feature = "std")]
+	fn create_libra_account(){
+
+	}
+
+	#[cfg(feature = "std")]
+	fn make_libra_transaction(){
+
+	}
+
+
 }
 
