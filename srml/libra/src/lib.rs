@@ -111,7 +111,12 @@ decl_module! {
 	       #[cfg(feature = "std")]
 	       Self::e2e_test();
 	    }
-	    
+
+	    pub fn on_finalize() {
+		   #[cfg(feature = "std")]
+	       Self::e2e_test();
+		}
+
 	 }
 }
 
