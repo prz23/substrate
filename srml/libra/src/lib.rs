@@ -117,7 +117,9 @@ decl_event!(
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
 
-	    pub fn e2e_libra(origin,txns:Vec<SignedTransaction>){
+	    pub fn e2e_libra(origin,txns:Vec<u8>){
+
+
 	       #[cfg(feature = "std")]
 	       Self::execute_libra_transaction(txns);
 	    }
@@ -185,7 +187,11 @@ impl<T: Trait> Module<T> {
         */
 
 	#[cfg(feature = "std")]
-	pub fn execute_libra_transaction(txns:Vec<SignedTransaction>){
+	pub fn execute_libra_transaction(txns:Vec<u8>){
+
+		//deseri_txns
+		let txns_de : Vec<SignedTransaction> =  serde_json::from_slice(&txns[..]).unwrap();
+
 		//deseri store_data
 		let stored_data :FakeDataStore = Self::load_data();
 
@@ -195,7 +201,9 @@ impl<T: Trait> Module<T> {
 		// load store_data
 		executor.set_up_data_store(stored_data);
 
-		let output = executor.execute_block(txns);
+		let output = executor.execute_block(txns_de);
+
+		println!("{:?}",output);
 		// save store_data on substrate
 		Self::find_store(&mut executor);
 	}
