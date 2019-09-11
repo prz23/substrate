@@ -65,12 +65,12 @@ impl system::Trait for Test {
 
 impl timestamp::Trait for Test {
 	type Moment = u64;
-	type OnTimestampSet = Aura;
+	type OnTimestampSet = ();
 	type MinimumPeriod = MinimumPeriod;
 }
 
 impl Trait for Test {
-	type Event = Event;
+	type Event = TestEvent;
 }
 
 pub fn new_test_ext(authorities: Vec<u64>) -> runtime_io::TestExternalities<Blake2Hasher> {
