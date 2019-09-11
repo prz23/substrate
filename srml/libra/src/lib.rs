@@ -51,7 +51,7 @@ use rstd::{result, prelude::*};
 use codec::{Encode, Decode};
 use support::{
 	decl_storage, decl_module, Parameter, storage::StorageValue, traits::{Get, FindAuthor},
-	ConsensusEngineId,decl_event,
+	ConsensusEngineId,decl_event,storage::StorageMap,
 };
 use app_crypto::AppPublic;
 use sr_primitives::{
@@ -67,6 +67,7 @@ use substrate_consensus_aura_primitives::{AURA_ENGINE_ID, ConsensusLog, Authorit
 
 mod mock;
 mod tests;
+
 
 #[cfg(feature = "std")]
 use types::{account_address,transaction::SignedTransaction};
@@ -87,6 +88,8 @@ use language_e2e_tests::{
 };
 #[cfg(feature = "std")]
 use canonical_serialization::*;
+#[cfg(feature = "std")]
+use serde_json;
 
 
 pub trait Trait: timestamp::Trait {
@@ -98,6 +101,8 @@ decl_storage! {
 	trait Store for Module<T: Trait> as Libra {
 		/// The last timestamp.
 		LastTimestamp get(last) build(|_| 0.into()): T::Moment;
+
+		pub StoreData get(store_data) : Vec<u8>;
 
 	}
 }
@@ -142,42 +147,78 @@ impl<T: Trait> Module<T> {
 	fn make_libra_transaction(){
 
 	}
+	/*
+        #[cfg(feature = "std")]
+        fn e2e_test(){
+
+
+
+            let mut executor = FakeExecutor::from_genesis_file();
+            let sender = AccountData::new(1_000_000, 10);
+            let receiver = AccountData::new(100_000, 10);
+            executor.add_account_data(&sender);
+
+            executor.add_account_data(&receiver);
+
+            let transfer_amount = 1_000;
+            let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
+
+            // execute transaction
+            let txns: Vec<SignedTransaction> = vec![txn];
+            //这是执行入口了，此前的操作都需要用户来做
+            let output = executor.execute_block(txns);
+
+
+            // save store_data on substrate
+            Self::find_store(&executor);
+
+            println!("{:?}",output);
+        }
+
+        #[cfg(feature = "std")]
+        pub fn save_data(executor: &mut FakeExecutor){
+            let vector_store: Vec<((AccountAddress,Vec<u8>),Vec<u8>)> = Vec::new();
+            let mut data_store = executor.get_data_store();
+            let hashmap = data_store.get_hash_map();
+            for (&accesspath,&vec) in hashmap.iter() {
+                vector_store.push(((accesspath.address,accesspath.path),vec));
+            }
+        }
+        */
 
 	#[cfg(feature = "std")]
-	fn e2e_test(){
+	pub fn execute_libra_transaction(txns:Vec<SignedTransaction>){
+		//deseri store_data
+		let stored_data :FakeDataStore = Self::load_data();
 
+		// execution
 		let mut executor = FakeExecutor::from_genesis_file();
-		let sender = AccountData::new(1_000_000, 10);
-		let receiver = AccountData::new(100_000, 10);
-		executor.add_account_data(&sender);
 
-		executor.add_account_data(&receiver);
+		// load store_data
+		executor.set_up_data_store(stored_data);
 
-		let transfer_amount = 1_000;
-		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
-
-		// execute transaction
-		let txns: Vec<SignedTransaction> = vec![txn];
-		//这是执行入口了，此前的操作都需要用户来做
 		let output = executor.execute_block(txns);
-
-		println!("{:?}",output);
+		// save store_data on substrate
+		Self::find_store(&executor);
 	}
-/*
+
 	#[cfg(feature = "std")]
-	pub fn save_data(executor: &mut FakeExecutor){
-		let vector_store: Vec<((AccountAddress,Vec<u8>),Vec<u8>)> = Vec::new();
+	pub fn find_store(executor: &mut FakeExecutor){
 		let mut data_store = executor.get_data_store();
-		let hashmap = data_store.get_hash_map();
-        for (&accesspath,&vec) in hashmap.iter() {
-			vector_store.push(((accesspath.address,accesspath.path),vec));
-		}
+        Self::save_data(data_store);
 	}
-	*/
 
 	#[cfg(feature = "std")]
-	pub fn seri_data(store:FakeDataStore){
-		//store.serialize()
-
+	pub fn save_data(store:&mut FakeDataStore){
+		let sered = serde_json::to_vec(&store).unwrap();
+		<StoreData<T>>::insert(&sered);
 	}
+
+	#[cfg(feature = "std")]
+	pub fn load_data() -> FakeDataStore{
+		let data = <StoreData<T>>::get();
+		let data2 : FakeDataStore =  serde_json::from_slice(&data[..]).unwrap();
+		data2
+	}
+
 }
