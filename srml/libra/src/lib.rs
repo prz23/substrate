@@ -187,11 +187,12 @@ impl<T: Trait> Module<T> {
         */
 
 	#[cfg(feature = "std")]
-	pub fn execute_libra_transaction(txns:Vec<u8>){
+	pub fn execute_libra_transaction(txn:Vec<u8>){
 
 		//deseri_txns
-		let txns_de : Vec<SignedTransaction> =  serde_json::from_slice(&txns[..]).unwrap();
-
+		let txn_de : SignedTransaction =  serde_json::from_slice(&txn[..]).unwrap();
+	    let txns_de = vec![txn_de];
+		
 		//deseri store_data
 		let stored_data :FakeDataStore = Self::load_data();
 
