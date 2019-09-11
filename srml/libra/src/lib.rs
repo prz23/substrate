@@ -69,7 +69,7 @@ mod mock;
 mod tests;
 
 #[cfg(feature = "std")]
-use types::{account_address,transaction::SignedTransaction,AccessPath};
+use types::{account_address,transaction::SignedTransaction};
 #[cfg(feature = "std")]
 use executor::*;
 #[cfg(feature = "std")]
