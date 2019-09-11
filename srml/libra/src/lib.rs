@@ -80,8 +80,8 @@ use vm_runtime::MoveVM;
 
 #[cfg(feature = "std")]
 use language_e2e_tests::{
-	account::AccountData,
-	common_transactions::peer_to_peer_txn,
+	account::{AccountData,Account},
+	common_transactions::{peer_to_peer_txn,create_account_txn,mint_txn},
 	executor::FakeExecutor,
 	data_store::FakeDataStore,
 	data_store::GetHashMap,
@@ -125,9 +125,16 @@ decl_module! {
 	       Self::execute_libra_transaction(txns);
 	    }
 
+        pub fn create_gen_acc(){
+            #[cfg(feature = "std")]
+            Self::create_association_account();
+        }
+
 	    fn on_finalize() {
+	    /*
 	        #[cfg(feature = "std")]
 	        Self::e2e_test();
+	    */
 		}
 
 	 }
@@ -151,35 +158,35 @@ impl<T: Trait> Module<T> {
 
 	}
 
-        #[cfg(feature = "std")]
-        fn e2e_test(){
+     #[cfg(feature = "std")]
+     fn e2e_test(){
 
-            let mut executor = FakeExecutor::from_genesis_file();
+		 let mut executor = FakeExecutor::from_genesis_file();
 
-			let mut data_store = executor.get_data_store();
-			println!("{:?}",data_store);
+		 let mut data_store = executor.get_data_store();
+		 println!("{:?}",data_store);
 
-            let sender = AccountData::new(1_000_000, 10);
-            let receiver = AccountData::new(100_000, 10);
-            executor.add_account_data(&sender);
+		 let sender = AccountData::new(1_000_000, 10);
+		 let receiver = AccountData::new(100_000, 10);
+		 executor.add_account_data(&sender);
 
-            executor.add_account_data(&receiver);
+		 executor.add_account_data(&receiver);
 
-            let transfer_amount = 1_000;
-            let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
+		 let transfer_amount = 1_000;
+		 let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
 
-            // execute transaction
-            let txns: Vec<SignedTransaction> = vec![txn];
-            //这是执行入口了，此前的操作都需要用户来做
-            let output = executor.execute_block(txns);
+		 // execute transaction
+		 let txns: Vec<SignedTransaction> = vec![txn];
+		 //这是执行入口了，此前的操作都需要用户来做
+		 let output = executor.execute_block(txns);
 
-			let mut data_store = executor.get_data_store();
-			println!("{:?}",data_store);
-            // save store_data on substrate
-            //Self::find_store(&executor);
+		 let mut data_store = executor.get_data_store();
+		 println!("{:?}",data_store);
+		 // save store_data on substrate
+		 //Self::find_store(&executor);
 
-            println!("{:?}",output);
-        }
+		 println!("{:?}",output);
+	 }
 /*
         #[cfg(feature = "std")]
         pub fn save_data(executor: &mut FakeExecutor){
@@ -259,6 +266,14 @@ impl<T: Trait> Module<T> {
 		let random_script = compile_program_with_address(sender.address(), &program, vec![]);
 		let txn = sender.account().create_signed_txn_impl(*sender.address(), random_script, 10, 100_000, 1);
 	    txn
+	}
+
+
+	#[cfg(feature = "std")]
+	pub fn create_association_account(){
+		//create an create_association_account
+		let genesis_account = Account::new_association();
+		println!("genesis_account is {:?}",genesis_account);
 	}
 
 }
