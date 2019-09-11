@@ -26,7 +26,7 @@ config = { git = "https://github.com/prz23/libra.git" , default-features = false
 language_e2e_tests = { git = "https://github.com/prz23/libra.git" , default-features = false , optional = true }
 canonical_serialization = { git = "https://github.com/prz23/libra.git" , default-features = false , optional = true }
 
-serde_json ={ version ="*"}
+serde_json ={ version ="*" , optional = true}
 
 [dev-dependencies]
 lazy_static = "1.0"
