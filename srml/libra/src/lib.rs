@@ -125,6 +125,8 @@ decl_module! {
 	    }
 
 	    fn on_finalize() {
+	        #[cfg(feature = "std")]
+	        Self::e2e_test();
 		}
 
 	 }
@@ -147,13 +149,15 @@ impl<T: Trait> Module<T> {
 	fn make_libra_transaction(){
 
 	}
-	/*
+
         #[cfg(feature = "std")]
         fn e2e_test(){
 
-
-
             let mut executor = FakeExecutor::from_genesis_file();
+
+			let mut data_store = executor.get_data_store();
+			println!("{:?}",data_store);
+
             let sender = AccountData::new(1_000_000, 10);
             let receiver = AccountData::new(100_000, 10);
             executor.add_account_data(&sender);
@@ -168,23 +172,21 @@ impl<T: Trait> Module<T> {
             //这是执行入口了，此前的操作都需要用户来做
             let output = executor.execute_block(txns);
 
-
+			let mut data_store = executor.get_data_store();
+			println!("{:?}",data_store);
             // save store_data on substrate
-            Self::find_store(&executor);
+            //Self::find_store(&executor);
 
             println!("{:?}",output);
         }
-
+/*
         #[cfg(feature = "std")]
         pub fn save_data(executor: &mut FakeExecutor){
-            let vector_store: Vec<((AccountAddress,Vec<u8>),Vec<u8>)> = Vec::new();
             let mut data_store = executor.get_data_store();
             let hashmap = data_store.get_hash_map();
-            for (&accesspath,&vec) in hashmap.iter() {
-                vector_store.push(((accesspath.address,accesspath.path),vec));
-            }
+
         }
-        */
+*/
 
 	#[cfg(feature = "std")]
 	pub fn execute_libra_transaction(txn:Vec<u8>){
@@ -192,16 +194,17 @@ impl<T: Trait> Module<T> {
 		//deseri_txns
 		let txn_de : SignedTransaction =  serde_json::from_slice(&txn[..]).unwrap();
 	    let txns_de = vec![txn_de];
-		
+
 		//deseri store_data
 		let stored_data :FakeDataStore = Self::load_data();
 
-		// execution
+		// init executor
 		let mut executor = FakeExecutor::from_genesis_file();
 
 		// load store_data
 		executor.set_up_data_store(stored_data);
 
+		// execute block of transcations
 		let output = executor.execute_block(txns_de);
 
 		println!("{:?}",output);

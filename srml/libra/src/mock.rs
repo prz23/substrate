@@ -70,7 +70,7 @@ impl timestamp::Trait for Test {
 }
 
 impl Trait for Test {
-	type AuthorityId = AuthorityId;
+	type Event = Event;
 }
 
 pub fn new_test_ext(authorities: Vec<u64>) -> runtime_io::TestExternalities<Blake2Hasher> {
