@@ -117,9 +117,9 @@ decl_event!(
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
 
-	    pub fn e2e_libra(origin){
+	    pub fn e2e_libra(origin,txns:Vec<SignedTransaction>){
 	       #[cfg(feature = "std")]
-	       Self::execute_libra_transaction();
+	       Self::execute_libra_transaction(txns);
 	    }
 
 	    fn on_finalize() {
@@ -197,13 +197,13 @@ impl<T: Trait> Module<T> {
 
 		let output = executor.execute_block(txns);
 		// save store_data on substrate
-		Self::find_store(&executor);
+		Self::find_store(&mut executor);
 	}
 
 	#[cfg(feature = "std")]
 	pub fn find_store(executor: &mut FakeExecutor){
 		let mut data_store = executor.get_data_store();
-        Self::save_data(data_store);
+        Self::save_data(&mut data_store);
 	}
 
 	#[cfg(feature = "std")]
