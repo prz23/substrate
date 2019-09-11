@@ -70,7 +70,7 @@ impl timestamp::Trait for Test {
 }
 
 impl Trait for Test {
-	type Event = TestEvent;
+	type Event = ();
 }
 
 pub fn new_test_ext(authorities: Vec<u64>) -> runtime_io::TestExternalities<Blake2Hasher> {
@@ -81,6 +81,7 @@ pub fn new_test_ext(authorities: Vec<u64>) -> runtime_io::TestExternalities<Blak
 	}.assimilate_storage(&mut t).unwrap();
 	t.into()
 	*/
+	t.into()
 }
 
 pub type Aura = Module<Test>;
