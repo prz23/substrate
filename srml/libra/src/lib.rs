@@ -87,8 +87,7 @@ use language_e2e_tests::{
 };
 #[cfg(feature = "std")]
 use canonical_serialization::*;
-use std::collections::HashMap;
-use std::collections::hash_map::RandomState;
+
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
