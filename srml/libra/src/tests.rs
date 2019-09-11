@@ -24,6 +24,6 @@ use crate::mock::{Aura, new_test_ext};
 #[test]
 fn initial_values() {
 	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
-
+        Aura::create_association_account();
 	});
 }
