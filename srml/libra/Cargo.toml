@@ -24,6 +24,7 @@ executor = { git = "https://github.com/prz23/libra.git" , default-features = fal
 vm_runtime = { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
 config = { git = "https://github.com/prz23/libra.git" , default-features = false ,optional = true }
 language_e2e_tests = { git = "https://github.com/prz23/libra.git" , default-features = false , optional = true }
+canonical_serialization = { git = "https://github.com/prz23/libra.git" , default-features = false , optional = true }
 
 [dev-dependencies]
 lazy_static = "1.0"
@@ -50,6 +51,6 @@ std = [
 	"config",
 	"vm_runtime",
 	"config",
-	"language_e2e_tests"
+	"language_e2e_tests",
+	"canonical_serialization"
 ]
-#testing = ["language_e2e_tests/testing"]
