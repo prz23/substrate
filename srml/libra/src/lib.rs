@@ -118,11 +118,9 @@ decl_event!(
 decl_module! {
 	pub struct Module<T: Trait> for enum Call where origin: T::Origin {
 
-	    pub fn e2e_libra(origin,txns:Vec<u8>){
-
-
+	    pub fn e2e_libra(origin,txn:Vec<u8>){
 	       #[cfg(feature = "std")]
-	       Self::execute_libra_transaction(txns);
+	       Self::execute_libra_transaction(txn);
 	    }
 
         pub fn create_gen_acc(){
@@ -131,10 +129,6 @@ decl_module! {
         }
 
 	    fn on_finalize() {
-	    /*
-	        #[cfg(feature = "std")]
-	        Self::e2e_test();
-	    */
 		}
 
 	 }
