@@ -234,9 +234,10 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn move_contratc_generate_signedtx() -> SignedTransaction {
+		let mut executor = FakeExecutor::from_genesis_file();
 		let sender = AccountData::new(1_000_000, 10);
 		executor.add_account_data(&sender);
-		
+
 		let program = String::from(
 			"
         module M {
