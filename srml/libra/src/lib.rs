@@ -209,12 +209,12 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn save_data(store:&mut FakeDataStore){
 		let sered = serde_json::to_vec(&store).unwrap();
-		<StoreData<T>>::put(&sered);
+		StoreData::put(&sered);
 	}
 
 	#[cfg(feature = "std")]
 	pub fn load_data() -> FakeDataStore{
-		let data = <StoreData<T>>::get();
+		let data = StoreData::get();
 		let data2 : FakeDataStore =  serde_json::from_slice(&data[..]).unwrap();
 		data2
 	}
