@@ -119,12 +119,10 @@ decl_module! {
 
 	    pub fn e2e_libra(origin){
 	       #[cfg(feature = "std")]
-	       Self::e2e_test();
+	       Self::execute_libra_transaction();
 	    }
 
 	    fn on_finalize() {
-		   #[cfg(feature = "std")]
-	       Self::e2e_test();
 		}
 
 	 }
