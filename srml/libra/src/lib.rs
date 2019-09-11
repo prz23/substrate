@@ -123,7 +123,7 @@ decl_module! {
 	       Self::execute_libra_transaction(txn);
 	    }
 
-        pub fn create_gen_acc(){
+        pub fn create_gen_acc(origin){
             #[cfg(feature = "std")]
             Self::create_association_account();
         }
