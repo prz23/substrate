@@ -69,7 +69,7 @@ mod mock;
 mod tests;
 
 #[cfg(feature = "std")]
-use types::{account_address,transaction::SignedTransaction};
+use types::{account_address,transaction::SignedTransaction,AccessPath};
 #[cfg(feature = "std")]
 use executor::*;
 #[cfg(feature = "std")]
@@ -82,7 +82,13 @@ use language_e2e_tests::{
 	account::AccountData,
 	common_transactions::peer_to_peer_txn,
 	executor::FakeExecutor,
+	data_store::FakeDataStore,
+	data_store::GetHashMap,
 };
+#[cfg(feature = "std")]
+use canonical_serialization::*;
+use std::collections::HashMap;
+use std::collections::hash_map::RandomState;
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
@@ -140,6 +146,7 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	fn e2e_test(){
+
 		let mut executor = FakeExecutor::from_genesis_file();
 		let sender = AccountData::new(1_000_000, 10);
 		let receiver = AccountData::new(100_000, 10);
@@ -150,8 +157,6 @@ impl<T: Trait> Module<T> {
 		let transfer_amount = 1_000;
 		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
 
-		//println!("{:?}",txn);
-
 		// execute transaction
 		let txns: Vec<SignedTransaction> = vec![txn];
 		//这是执行入口了，此前的操作都需要用户来做
@@ -159,6 +164,21 @@ impl<T: Trait> Module<T> {
 
 		println!("{:?}",output);
 	}
+/*
+	#[cfg(feature = "std")]
+	pub fn save_data(executor: &mut FakeExecutor){
+		let vector_store: Vec<((AccountAddress,Vec<u8>),Vec<u8>)> = Vec::new();
+		let mut data_store = executor.get_data_store();
+		let hashmap = data_store.get_hash_map();
+        for (&accesspath,&vec) in hashmap.iter() {
+			vector_store.push(((accesspath.address,accesspath.path),vec));
+		}
+	}
+	*/
 
+	#[cfg(feature = "std")]
+	pub fn seri_data(store:FakeDataStore){
+		//store.serialize()
+
+	}
 }
-
