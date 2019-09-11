@@ -85,6 +85,7 @@ use language_e2e_tests::{
 	executor::FakeExecutor,
 	data_store::FakeDataStore,
 	data_store::GetHashMap,
+	compile::compile_program_with_address,
 };
 #[cfg(feature = "std")]
 use canonical_serialization::*;
@@ -229,6 +230,31 @@ impl<T: Trait> Module<T> {
 		let data = StoreData::get();
 		let data2 : FakeDataStore =  serde_json::from_slice(&data[..]).unwrap();
 		data2
+	}
+
+	#[cfg(feature = "std")]
+	pub fn move_contratc_generate_signedtx() -> SignedTransaction {
+		let program = String::from(
+			"
+        module M {
+            public foo(u: u64): u64 * u64 * u64 {
+                let twice: u64;
+                let quadruple: u64;
+                twice = 2 * copy(u);
+                quadruple = 4 * copy(u);
+                return move(u), move(twice), move(quadruple);
+            }
+
+            public bar(): u64 {
+                return 2;
+            }
+        }
+        ",
+		);
+
+		let random_script = compile_program_with_address(sender.address(), &program, vec![]);
+		let txn = sender.account().create_signed_txn_impl(*sender.address(), random_script, 10, 100_000, 1);
+	    txn
 	}
 
 }
