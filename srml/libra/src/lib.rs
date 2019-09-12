@@ -105,6 +105,8 @@ decl_storage! {
 
 		pub StoreData get(store_data) : Vec<u8>;
 
+		pub Init get(init) : bool = true;
+
 	}
 }
 
@@ -207,8 +209,14 @@ impl<T: Trait> Module<T> {
 		let txn_de : SignedTransaction =  SimpleDeserializer::deserialize(&txn).unwrap();
 	    let txns_de = vec![txn_de];
 		println!("2");
-		//deseri store_data
-		let stored_data :FakeDataStore = Self::load_data();
+
+		if Init::get() == true {
+			Init::put(false)
+		}else {
+			//deseri store_data
+			let stored_data :FakeDataStore = Self::load_data();
+		}
+
 		println!("3");
 		// init executor
 		let mut executor = FakeExecutor::from_genesis_file();
