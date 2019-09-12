@@ -93,6 +93,7 @@ use canonical_serialization::*;
 use serde_json;
 use types::access_path::AccessPath;
 use types::account_address::AccountAddress;
+use std::clone::Clone;
 
 #[cfg(feature = "std")]
 pub type Vechashmap = std::collections::HashMap<Vec<u8>,Vec<u8>>;
@@ -260,7 +261,7 @@ impl<T: Trait> Module<T> {
 		let mut hashmap2 = Vechashmap::new();
 		println!("hashmap_seri");
 		for (&a,&b) in hashmap.iter(){
-			let sered_accesspath = serde_json::to_vec(&a).unwrap();
+			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
 			hashmap2.insert(sered_accesspath,b);
 		}
 		let finalpro = serde_json::to_vec(&hashmap2).unwrap();
