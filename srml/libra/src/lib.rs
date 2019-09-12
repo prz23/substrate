@@ -260,7 +260,7 @@ impl<T: Trait> Module<T> {
 		let hashmap = store.get_hash_map();
 		let mut hashmap2 = Vechashmap::new();
 		println!("hashmap_seri");
-		for (&a,&b) in hashmap.iter(){
+		for (a,b) in hashmap.into_iter(){
 			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
 			hashmap2.insert(sered_accesspath,b);
 		}
