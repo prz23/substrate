@@ -95,6 +95,7 @@ use canonical_serialization::*;
 use serde_json;
 #[cfg(feature = "std")]
 use std::prelude::v1::Vec;
+#[cfg(feature = "std")]
 use std::collections::HashMap;
 
 
