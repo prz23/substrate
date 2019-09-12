@@ -253,6 +253,8 @@ impl<T: Trait> Module<T> {
 	pub fn access_path_test(){
 		let new = AccessPath::new(AccountAddress::random(),vec![0u8]);
 		let sered = serde_json::to_vec(&new).unwrap();
+
+		let back:AccessPath = serde_json::from_slice(&sered[..]).unwrap();
 	}
 
 	#[cfg(feature = "std")]
