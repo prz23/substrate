@@ -218,21 +218,18 @@ impl<T: Trait> Module<T> {
 		//deseri_txns
 		let txn_de : SignedTransaction =  SimpleDeserializer::deserialize(&txn).unwrap();
 	    let txns_de = vec![txn_de];
-		println!("2");
+
+		// init executor
+		let mut executor = FakeExecutor::from_genesis_file();
 
 		if Init::get() == true {
 			Init::put(false)
 		}else {
 			//deseri store_data
 			let stored_data :FakeDataStore = Self::load_data_back();
+			// load store_data
+			executor.set_up_data_store(stored_data);
 		}
-
-		println!("3");
-		// init executor
-		let mut executor = FakeExecutor::from_genesis_file();
-
-		// load store_data
-		//executor.set_up_data_store(stored_data);
 
 		// execute block of transcations
 		let output = executor.execute_block(txns_de);
@@ -241,7 +238,6 @@ impl<T: Trait> Module<T> {
 		// save store_data on substrate
 		Self::find_store(&mut executor);
 
-		Self::load_data_back();
 		Ok(())
 	}
 
