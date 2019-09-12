@@ -236,13 +236,13 @@ impl<T: Trait> Module<T> {
 
 		println!("{:?}",output);
 		// save store_data on substrate
-		Self::find_store(&mut executor);
+		Self::store_the_data(&mut executor);
 
 		Ok(())
 	}
 
 	#[cfg(feature = "std")]
-	pub fn find_store(executor: &mut FakeExecutor){
+	pub fn store_the_data(executor: &mut FakeExecutor){
 		let mut data_store = executor.get_data_store();
 		Self::hash_map_iter_and_seri(&mut data_store);
         //Self::save_data(&mut data_store);
@@ -261,20 +261,18 @@ impl<T: Trait> Module<T> {
 		let hashmap = store.get_hash_map();
 		let mut store_vec = Vec::new();
 
-		println!("hashmap_seri 1");
 		for (a,b) in hashmap.into_iter(){
 			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
 			store_vec.push((sered_accesspath,b));
 		}
-		println!("hashmap_seri 2");
+
 		let finalpro = serde_json::to_vec(&store_vec).unwrap();
 		Libra_Hash_Map::put(finalpro);
-		println!("hashmap_seri end");
 	}
 
 	#[cfg(feature = "std")]
 	pub fn load_data_back() -> FakeDataStore{
-		println!("start to back");
+		println!("start to load data back");
 		let data = Libra_Hash_Map::get();
 		let mut hashmap = Vechashmap::new();
 
