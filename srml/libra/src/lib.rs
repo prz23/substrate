@@ -95,10 +95,11 @@ use canonical_serialization::*;
 use serde_json;
 #[cfg(feature = "std")]
 use std::prelude::v1::Vec;
+use std::collections::HashMap;
 
 
 #[cfg(feature = "std")]
-pub type Vechashmap = std::collections::HashMap<Vec<u8>,Vec<u8>>;
+pub type Vechashmap = std::collections::HashMap<AccessPath,Vec<u8>>;
 
 
 pub trait Trait: timestamp::Trait {
@@ -223,7 +224,7 @@ impl<T: Trait> Module<T> {
 			Init::put(false)
 		}else {
 			//deseri store_data
-			let stored_data :FakeDataStore = Self::load_data();
+			let stored_data :FakeDataStore = Self::load_data_back();
 		}
 
 		println!("3");
@@ -239,6 +240,8 @@ impl<T: Trait> Module<T> {
 		println!("{:?}",output);
 		// save store_data on substrate
 		Self::find_store(&mut executor);
+
+		Self::load_data_back();
 		Ok(())
 	}
 
@@ -271,14 +274,24 @@ impl<T: Trait> Module<T> {
 		let finalpro = serde_json::to_vec(&store_vec).unwrap();
 		Libra_Hash_Map::put(finalpro);
 		println!("hashmap_seri end");
-
-		println!("start to back");
-		let data = Libra_Hash_Map::get();
-		//let data2 = SimpleDeserializer::deserialize(&data).unwrap();
-		let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
-		
 	}
 
+	#[cfg(feature = "std")]
+	pub fn load_data_back() -> FakeDataStore{
+		println!("start to back");
+		let data = Libra_Hash_Map::get();
+		let mut hashmap = Vechashmap::new();
+
+		let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
+		for (a,b) in data2 {
+		    let path : AccessPath = serde_json::from_slice(&a[..]).unwrap();
+			hashmap.insert(path,b);
+		}
+
+		let fake_data_store = FakeDataStore::new(hashmap);
+
+		fake_data_store
+	}
 
 	#[cfg(feature = "std")]
 	pub fn access_path_test(){
