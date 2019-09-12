@@ -272,6 +272,7 @@ impl<T: Trait> Module<T> {
 
 		let finalpro = serde_json::to_vec(&store_vec).unwrap();
 		Libra_Hash_Map::put(finalpro);
+		println!("hash_map_iter_and_seri");
 	}
 
 	#[cfg(feature = "std")]
