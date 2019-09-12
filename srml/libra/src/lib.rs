@@ -118,6 +118,8 @@ decl_storage! {
 		pub Init get(init) : bool = true;
 
         pub Libra_Hash_Map get(libra_hash_map): Vec<u8>;
+
+        pub Count get(count) : u64 = 0;
 	}
 }
 
@@ -164,8 +166,14 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	fn make_libra_transaction(){
-        let tx = Self::return_a_tx();
-		Self::execute_libra_transaction(tx);
+		let i = Count::get();
+		if  i >=5{
+			let tx = Self::return_a_tx();
+			Self::execute_libra_transaction(tx);
+			Count::put(0);
+		}else {
+			Count::put(i+1);
+		}
 	}
 
 	#[cfg(feature = "std")]
