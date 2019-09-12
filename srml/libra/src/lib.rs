@@ -240,7 +240,7 @@ impl<T: Trait> Module<T> {
 
 		println!("{:?}",output);
 		// save store_data on substrate
-		Self::store_the_data(&mut executor);
+		//Self::store_the_data(&mut executor);
 		println!("prz");
 		Ok(())
 	}
