@@ -112,7 +112,7 @@ decl_storage! {
 
 		pub Init get(init) : bool = true;
 
-        pub Libra_Hash_Map get(libra_hash_map): Vec<u8>,
+        pub Libra_Hash_Map get(libra_hash_map): Vec<u8>;
 	}
 }
 
