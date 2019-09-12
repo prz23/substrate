@@ -241,8 +241,9 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn save_data(store:&mut FakeDataStore){
-		//let sered = SimpleSerializer::serialize(&store).unwrap();
-		let sered = serde_json::to_vec(&store).unwrap();
+		let hashmap = store.get_hash_map();
+
+		let sered = serde_json::to_vec(&hashmap).unwrap();
 		StoreData::put(&sered);
 	}
 
