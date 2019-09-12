@@ -95,14 +95,8 @@ use types::access_path::AccessPath;
 use types::account_address::AccountAddress;
 
 #[cfg(feature = "std")]
-#[derive(PartialEq, Eq, Clone, Encode, Decode)]
 pub type Vechashmap = std::collections::HashMap<Vec<u8>,Vec<u8>>;
 
-#[cfg(feature = "std")]
-#[derive(PartialEq, Eq, Clone, Encode, Decode)]
-struct ForSave {
-	data: std::collections::HashMap<Vec<u8>,Vec<u8>>,
-}
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
@@ -118,7 +112,7 @@ decl_storage! {
 
 		pub Init get(init) : bool = true;
 
-        pub Libra_Hash_Map get(libra_hash_map): ForSave,
+        pub Libra_Hash_Map get(libra_hash_map): Vec<u8>,
 	}
 }
 
@@ -248,7 +242,8 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn find_store(executor: &mut FakeExecutor){
 		let mut data_store = executor.get_data_store();
-        Self::save_data(&mut data_store);
+		Self::hash_map_iter_and_seri(&mut data_store);
+        //Self::save_data(&mut data_store);
 	}
 
 	#[cfg(feature = "std")]
@@ -258,18 +253,21 @@ impl<T: Trait> Module<T> {
 		let sered = serde_json::to_vec(&hashmap).unwrap();
 		StoreData::put(&sered);
 	}
-/*
+
 	#[cfg(feature = "std")]
 	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
-		let hashmap2 = Vechashmap::new();
+		let mut hashmap2 = Vechashmap::new();
 		println!("hashmap_seri");
 		for (&a,&b) in hashmap.iter(){
 			let sered_accesspath = serde_json::to_vec(&a).unwrap();
-
+			hashmap2.insert(sered_accesspath,b);
 		}
+		let finalpro = serde_json::to_vec(&hashmap2).unwrap();
+		Libra_Hash_Map::put(finalpro);
+		println!("hashmap_seri end");
 	}
-*/
+
 	#[cfg(feature = "std")]
 	pub fn access_path_test(){
 		let new = AccessPath::new(AccountAddress::random(),vec![0u8]);
