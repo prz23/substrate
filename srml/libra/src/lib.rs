@@ -98,6 +98,11 @@ use types::account_address::AccountAddress;
 #[derive(PartialEq, Eq, Clone, Encode, Decode)]
 pub type Vechashmap = std::collections::HashMap<Vec<u8>,Vec<u8>>;
 
+#[cfg(feature = "std")]
+#[derive(PartialEq, Eq, Clone, Encode, Decode)]
+struct ForSave {
+	data: std::collections::HashMap<Vec<u8>,Vec<u8>>,
+}
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
@@ -113,7 +118,7 @@ decl_storage! {
 
 		pub Init get(init) : bool = true;
 
-       // pub Libra_Hash_Map get(libra_hash_map):
+        pub Libra_Hash_Map get(libra_hash_map): ForSave,
 	}
 }
 
