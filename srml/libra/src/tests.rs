@@ -20,10 +20,27 @@
 
 use runtime_io::with_externalities;
 use crate::mock::{Aura, new_test_ext};
+use types::transaction::SignedTransaction;
 
 #[test]
 fn initial_values() {
 	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
         Aura::create_association_account();
+	});
+}
+
+#[test]
+fn txns_test() {
+	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
+		Aura::e2e_test();
+	});
+}
+
+#[test]
+fn full_test() {
+	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
+
+		let tx = Aura::return_a_tx();
+		Aura::e2e_test();
 	});
 }

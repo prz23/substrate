@@ -51,7 +51,7 @@ use rstd::{result, prelude::*};
 use codec::{Encode, Decode};
 use support::{
 	decl_storage, decl_module, Parameter, storage::StorageValue, traits::{Get, FindAuthor},
-	ConsensusEngineId,decl_event,storage::StorageMap,
+	ConsensusEngineId,decl_event,storage::StorageMap,dispatch::Result,
 };
 use app_crypto::AppPublic;
 use sr_primitives::{
@@ -152,6 +152,15 @@ impl<T: Trait> Module<T> {
 
 	}
 
+	#[cfg(feature = "std")]
+	fn return_a_tx() -> SignedTransaction{
+		let sender = AccountData::new(1_000_000, 10);
+		let receiver = AccountData::new(100_000, 10);
+		let transfer_amount = 1_000;
+		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
+        txn
+	}
+
      #[cfg(feature = "std")]
      fn e2e_test(){
 
@@ -191,10 +200,10 @@ impl<T: Trait> Module<T> {
 */
 
 	#[cfg(feature = "std")]
-	pub fn execute_libra_transaction(txn:Vec<u8>){
+	pub fn execute_libra_transaction(txn:Vec<u8>) -> Result{
 
 		//deseri_txns
-		let txn_de : SignedTransaction =  serde_json::from_slice(&txn[..]).unwrap();
+		let txn_de : SignedTransaction =  SimpleDeserializer::deserialize(&txn).unwrap();
 	    let txns_de = vec![txn_de];
 
 		//deseri store_data
@@ -212,6 +221,7 @@ impl<T: Trait> Module<T> {
 		println!("{:?}",output);
 		// save store_data on substrate
 		Self::find_store(&mut executor);
+		Ok(())
 	}
 
 	#[cfg(feature = "std")]
@@ -222,14 +232,16 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn save_data(store:&mut FakeDataStore){
-		let sered = serde_json::to_vec(&store).unwrap();
+		let sered = SimpleSerializer::serialize(&store).unwrap();
+		// let sered = serde_json::to_vec(&store).unwrap();
 		StoreData::put(&sered);
 	}
 
 	#[cfg(feature = "std")]
 	pub fn load_data() -> FakeDataStore{
 		let data = StoreData::get();
-		let data2 : FakeDataStore =  serde_json::from_slice(&data[..]).unwrap();
+		let data2 = SimpleDeserializer::deserialize(&data).unwrap();
+		//let data2 : FakeDataStore =  serde_json::from_slice(&data[..]).unwrap();
 		data2
 	}
 
