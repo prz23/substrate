@@ -46,6 +46,7 @@ fn full_test() {
 		Aura::execute_libra_transaction(tx);
 		let tx: Vec<u8> = Aura::return_a_tx();
 		Aura::execute_libra_transaction(tx);
+		println!("{:?}",Aura::Libra_Hash_Map());
 	});
 }
 
