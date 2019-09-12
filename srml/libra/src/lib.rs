@@ -240,7 +240,7 @@ impl<T: Trait> Module<T> {
 
 		println!("{:?}",output);
 		// save store_data on substrate
-		//Self::store_the_data(&mut executor);
+		Self::store_the_data(&mut executor);
 		println!("prz");
 		Ok(())
 	}
@@ -281,13 +281,14 @@ impl<T: Trait> Module<T> {
 		let mut hashmap = Vechashmap::new();
 
 		let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
+		println!("unwrap");
 		for (a,b) in data2 {
 		    let path : AccessPath = serde_json::from_slice(&a[..]).unwrap();
 			hashmap.insert(path,b);
 		}
 
 		let fake_data_store = FakeDataStore::new(hashmap);
-
+		println!("return");
 		fake_data_store
 	}
 
