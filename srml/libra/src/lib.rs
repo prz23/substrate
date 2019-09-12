@@ -258,7 +258,7 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
-		let mut hashmap2 = Vechashmap::new();
+		let mut hashmap2:Vechashmap = Vechashmap::new();
 		println!("hashmap_seri 1");
 		for (a,b) in hashmap.into_iter(){
 			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
