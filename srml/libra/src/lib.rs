@@ -259,11 +259,12 @@ impl<T: Trait> Module<T> {
 	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
 		let mut hashmap2 = Vechashmap::new();
-		println!("hashmap_seri");
+		println!("hashmap_seri 1");
 		for (a,b) in hashmap.into_iter(){
 			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
 			hashmap2.insert(sered_accesspath,b);
 		}
+		println!("hashmap_seri 2");
 		let finalpro = serde_json::to_vec(&hashmap2).unwrap();
 		Libra_Hash_Map::put(finalpro);
 		println!("hashmap_seri end");
