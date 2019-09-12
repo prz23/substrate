@@ -32,7 +32,7 @@ fn initial_values() {
 #[test]
 fn txns_test() {
 	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
-		Aura::e2e_test();
+		Aura::move_contratc_generate_signedtx();
 	});
 }
 
