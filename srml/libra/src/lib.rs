@@ -237,7 +237,7 @@ impl<T: Trait> Module<T> {
 		// let sered = serde_json::to_vec(&store).unwrap();
 		//StoreData::put(&sered);
 	}
-
+/*
 	#[cfg(feature = "std")]
 	pub fn load_data() -> FakeDataStore{
 		//let data = StoreData::get();
@@ -245,7 +245,7 @@ impl<T: Trait> Module<T> {
 		//let data2 : FakeDataStore =  serde_json::from_slice(&data[..]).unwrap();
 		//data2
 	}
-
+*/
 	#[cfg(feature = "std")]
 	pub fn move_contratc_generate_signedtx() -> SignedTransaction {
 		let mut executor = FakeExecutor::from_genesis_file();
