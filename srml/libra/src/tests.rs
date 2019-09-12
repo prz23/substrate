@@ -44,3 +44,12 @@ fn full_test() {
 		Aura::execute_libra_transaction(tx);
 	});
 }
+
+#[test]
+fn access_test() {
+	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
+
+		Arua::access_path_test();
+		println!("end");
+	});
+}

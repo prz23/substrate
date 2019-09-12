@@ -91,6 +91,8 @@ use language_e2e_tests::{
 use canonical_serialization::*;
 #[cfg(feature = "std")]
 use serde_json;
+use types::access_path::AccessPath;
+use types::account_address::AccountAddress;
 
 
 pub trait Trait: timestamp::Trait {
@@ -245,6 +247,12 @@ impl<T: Trait> Module<T> {
         println!("start to seri");
 		let sered = serde_json::to_vec(&hashmap).unwrap();
 		StoreData::put(&sered);
+	}
+
+	#[cfg(feature = "std")]
+	pub fn access_path_test(){
+		let new = AccessPath::new(AccountAddress::random(),vec![0u8]);
+		let sered = serde_json::to_vec(&new).unwrap();
 	}
 
 	#[cfg(feature = "std")]
