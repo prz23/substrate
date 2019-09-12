@@ -94,6 +94,10 @@ use serde_json;
 use types::access_path::AccessPath;
 use types::account_address::AccountAddress;
 
+#[cfg(feature = "std")]
+#[derive(PartialEq, Eq, Clone, Encode, Decode)]
+pub type Vechashmap = std::collections::HashMap<Vec<u8>,Vec<u8>>;
+
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
@@ -109,6 +113,7 @@ decl_storage! {
 
 		pub Init get(init) : bool = true;
 
+        pub Libra_Hash_Map get(libra_hash_map):
 	}
 }
 
@@ -248,7 +253,18 @@ impl<T: Trait> Module<T> {
 		let sered = serde_json::to_vec(&hashmap).unwrap();
 		StoreData::put(&sered);
 	}
+/*
+	#[cfg(feature = "std")]
+	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
+		let hashmap = store.get_hash_map();
+		let hashmap2 = Vechashmap::new();
+		println!("hashmap_seri");
+		for (&a,&b) in hashmap.iter(){
+			let sered_accesspath = serde_json::to_vec(&a).unwrap();
 
+		}
+	}
+*/
 	#[cfg(feature = "std")]
 	pub fn access_path_test(){
 		let new = AccessPath::new(AccountAddress::random(),vec![0u8]);
