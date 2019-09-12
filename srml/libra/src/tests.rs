@@ -40,7 +40,7 @@ fn txns_test() {
 fn full_test() {
 	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
 
-		let tx = Aura::return_a_tx();
-		Aura::e2e_test();
+		let tx: Vec<u8> = Aura::return_a_tx();
+		Aura::execute_libra_transaction(tx);
 	});
 }

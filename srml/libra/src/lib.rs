@@ -153,12 +153,13 @@ impl<T: Trait> Module<T> {
 	}
 
 	#[cfg(feature = "std")]
-	fn return_a_tx() -> SignedTransaction{
+	fn return_a_tx() -> Vec<u8>{
 		let sender = AccountData::new(1_000_000, 10);
 		let receiver = AccountData::new(100_000, 10);
 		let transfer_amount = 1_000;
 		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
-        txn
+		let vec:Vec<u8> = SimpleSerializer::serialize(&txn).unwrap();
+		vec
 	}
 
      #[cfg(feature = "std")]
@@ -201,14 +202,14 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn execute_libra_transaction(txn:Vec<u8>) -> Result{
-
+		println!("1");
 		//deseri_txns
 		let txn_de : SignedTransaction =  SimpleDeserializer::deserialize(&txn).unwrap();
 	    let txns_de = vec![txn_de];
-
+		println!("2");
 		//deseri store_data
 		let stored_data :FakeDataStore = Self::load_data();
-
+		println!("3");
 		// init executor
 		let mut executor = FakeExecutor::from_genesis_file();
 
