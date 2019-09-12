@@ -113,7 +113,7 @@ decl_storage! {
 
 		pub Init get(init) : bool = true;
 
-        pub Libra_Hash_Map get(libra_hash_map):
+       // pub Libra_Hash_Map get(libra_hash_map):
 	}
 }
 
