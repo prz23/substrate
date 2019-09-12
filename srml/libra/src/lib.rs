@@ -70,7 +70,9 @@ mod tests;
 
 
 #[cfg(feature = "std")]
-use types::{account_address,transaction::SignedTransaction};
+use types::{account_address::AccountAddress,
+			transaction::SignedTransaction,
+			access_path::AccessPath};
 #[cfg(feature = "std")]
 use executor::*;
 #[cfg(feature = "std")]
@@ -91,9 +93,7 @@ use language_e2e_tests::{
 use canonical_serialization::*;
 #[cfg(feature = "std")]
 use serde_json;
-use types::access_path::AccessPath;
-use types::account_address::AccountAddress;
-use std::clone::Clone;
+
 
 #[cfg(feature = "std")]
 pub type Vechashmap = std::collections::HashMap<Vec<u8>,Vec<u8>>;
@@ -258,14 +258,16 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
-		let mut hashmap2:Vechashmap = Vechashmap::new();
+		let mut store_vec = Vechashmap::new();
+
+
 		println!("hashmap_seri 1");
 		for (a,b) in hashmap.into_iter(){
 			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
-			hashmap2.insert(sered_accesspath,b);
+			store_vec.push(sered_accesspath,b);
 		}
 		println!("hashmap_seri 2");
-		let finalpro = serde_json::to_vec(&hashmap2).unwrap();
+		let finalpro = serde_json::to_vec(&store_vec).unwrap();
 		Libra_Hash_Map::put(finalpro);
 		println!("hashmap_seri end");
 	}
