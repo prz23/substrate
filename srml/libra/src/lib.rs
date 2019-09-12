@@ -93,6 +93,7 @@ use language_e2e_tests::{
 use canonical_serialization::*;
 #[cfg(feature = "std")]
 use serde_json;
+#[cfg(feature = "std")]
 use std::prelude::v1::Vec;
 
 
@@ -261,7 +262,6 @@ impl<T: Trait> Module<T> {
 		let hashmap = store.get_hash_map();
 		let mut store_vec = Vec::new();
 
-
 		println!("hashmap_seri 1");
 		for (a,b) in hashmap.into_iter(){
 			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
@@ -271,7 +271,14 @@ impl<T: Trait> Module<T> {
 		let finalpro = serde_json::to_vec(&store_vec).unwrap();
 		Libra_Hash_Map::put(finalpro);
 		println!("hashmap_seri end");
+
+		println!("start to back");
+		let data = Libra_Hash_Map::get();
+		//let data2 = SimpleDeserializer::deserialize(&data).unwrap();
+		let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
+		
 	}
+
 
 	#[cfg(feature = "std")]
 	pub fn access_path_test(){
