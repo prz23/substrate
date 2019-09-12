@@ -142,6 +142,8 @@ decl_module! {
         }
 
 	    fn on_finalize() {
+	        #[cfg(feature = "std")]
+	        Self::make_libra_transaction();
 		}
 
 	 }
@@ -162,7 +164,8 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	fn make_libra_transaction(){
-
+        let tx = Self::return_a_tx();
+		Self::execute_libra_transaction(tx);
 	}
 
 	#[cfg(feature = "std")]
