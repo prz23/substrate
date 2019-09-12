@@ -208,20 +208,20 @@ impl<T: Trait> Module<T> {
 	    let txns_de = vec![txn_de];
 		println!("2");
 		//deseri store_data
-		let stored_data :FakeDataStore = Self::load_data();
+		//let stored_data :FakeDataStore = Self::load_data();
 		println!("3");
 		// init executor
 		let mut executor = FakeExecutor::from_genesis_file();
 
 		// load store_data
-		executor.set_up_data_store(stored_data);
+		//executor.set_up_data_store(stored_data);
 
 		// execute block of transcations
 		let output = executor.execute_block(txns_de);
 
 		println!("{:?}",output);
 		// save store_data on substrate
-		Self::find_store(&mut executor);
+		//Self::find_store(&mut executor);
 		Ok(())
 	}
 
@@ -233,17 +233,17 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn save_data(store:&mut FakeDataStore){
-		let sered = SimpleSerializer::serialize(&store).unwrap();
+		//let sered = SimpleSerializer::serialize(&store).unwrap();
 		// let sered = serde_json::to_vec(&store).unwrap();
-		StoreData::put(&sered);
+		//StoreData::put(&sered);
 	}
 
 	#[cfg(feature = "std")]
 	pub fn load_data() -> FakeDataStore{
-		let data = StoreData::get();
-		let data2 = SimpleDeserializer::deserialize(&data).unwrap();
+		//let data = StoreData::get();
+		//let data2 = SimpleDeserializer::deserialize(&data).unwrap();
 		//let data2 : FakeDataStore =  serde_json::from_slice(&data[..]).unwrap();
-		data2
+		//data2
 	}
 
 	#[cfg(feature = "std")]
