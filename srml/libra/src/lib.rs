@@ -242,7 +242,7 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn save_data(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
-
+        println!("start to seri");
 		let sered = serde_json::to_vec(&hashmap).unwrap();
 		StoreData::put(&sered);
 	}
