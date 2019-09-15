@@ -51,7 +51,7 @@ use rstd::{result, prelude::*};
 use codec::{Encode, Decode};
 use support::{
 	decl_storage, decl_module, Parameter, storage::StorageValue, traits::{Get, FindAuthor},
-	ConsensusEngineId,decl_event,storage::StorageMap,dispatch::Result,
+	ConsensusEngineId,decl_event,storage::StorageMap,dispatch::Result,storage::StorageLinkedMap
 };
 use app_crypto::AppPublic;
 use sr_primitives::{
@@ -99,9 +99,15 @@ use std::prelude::v1::Vec;
 use std::collections::HashMap;
 
 
+
 #[cfg(feature = "std")]
 pub type Vechashmap = std::collections::HashMap<AccessPath,Vec<u8>>;
 
+
+#[derive(Debug, PartialEq, Eq, Clone, Encode, Decode)]
+pub struct NeiRong{
+	data: Vec<u8>,
+}
 
 pub trait Trait: timestamp::Trait {
 	/// The identifier type for an authority.
@@ -120,6 +126,17 @@ decl_storage! {
         pub Libra_Hash_Map get(libra_hash_map): Vec<u8>;
 
         pub Count get(count) : u64 = 0;
+
+        pub RealData get(real_data): map  Vec<u8> => Vec<u8>;
+
+        pub Libra_Hash_Data get(libra_hash_data): map u64 => Vec<u8>;
+
+        pub KeyMap get(key_map) : map u64 => Vec<u8>;
+        pub MaxKey get(max_key) : u64 = 0;
+
+        pub Key get(key): Vec<(Vec<u8>)>;
+        pub Key2 get(key2): Vec<NeiRong>;
+        pub Key3 get(key3): Vec<u8>;
 	}
 }
 
@@ -146,6 +163,7 @@ decl_module! {
 	    fn on_finalize() {
 	        #[cfg(feature = "std")]
 	        Self::make_libra_transaction();
+
 		}
 
 	 }
@@ -167,7 +185,7 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	fn make_libra_transaction(){
 		let i = Count::get();
-		if  i >=5{
+		if  i >= 3{
 			let tx = Self::return_a_tx();
 			Self::execute_libra_transaction(tx);
 			Count::put(0);
@@ -257,7 +275,6 @@ impl<T: Trait> Module<T> {
 	pub fn store_the_data(executor: &mut FakeExecutor){
 		let mut data_store = executor.get_data_store();
 		Self::hash_map_iter_and_seri(&mut data_store);
-        //Self::save_data(&mut data_store);
 	}
 
 	#[cfg(feature = "std")]
@@ -269,33 +286,63 @@ impl<T: Trait> Module<T> {
 	}
 
 	#[cfg(feature = "std")]
-	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
+	pub fn save_real_data(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
-		let mut store_vec = Vec::new();
 
 		for (a,b) in hashmap.into_iter(){
 			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
-			store_vec.push((sered_accesspath,b));
+			//RealData::insert(sered_accesspath,b);
 		}
 
-		let finalpro = serde_json::to_vec(&store_vec).unwrap();
-		Libra_Hash_Map::put(finalpro);
+		//Libra_Hash_Map::put(finalpro);
+		println!("hash_map_iter_and_seri");
+	}
+
+	#[cfg(feature = "std")]
+	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
+		let hashmap = store.get_hash_map();
+
+
+		let mut all_key_vec:Vec<Vec<u8>> = Vec::new();
+        let mut i = 0u64;
+		for (a,b) in hashmap.into_iter(){
+			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
+
+			println!("insert a {:?}",sered_accesspath.clone());
+			println!("insert b {:?}",b.clone());
+//			RealData::insert(&sered_accesspath,&b);
+			KeyMap::insert(i,&sered_accesspath);
+			//Key3::put(sered_accesspath);
+			//let neirong = NeiRong{ data :sered_accesspath.clone() };
+			i = i + 1;
+
+		}
+		MaxKey::put(i);
+
+		//let finalpro = serde_json::to_vec(&store_vec).unwrap();
+		//Libra_Hash_Map::put(finalpro);
+		//let vslj = vec![00u8];
+		//Libra_Hash_Map::put(vslj);
+		//Libra_Hash_Data::insert(1,finalpro);
 		println!("hash_map_iter_and_seri");
 	}
 
 	#[cfg(feature = "std")]
 	pub fn load_data_back() -> FakeDataStore{
 		println!("start to load data back");
-		let data = Libra_Hash_Map::get();
+		//let data = Libra_Hash_Map::get();
 		let mut hashmap = Vechashmap::new();
 
-		let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
+		//let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
 		println!("unwrap");
-		for (a,b) in data2 {
+		/*
+		let vec_total = Key::get();
+		for a in vec_total {
+		    let b = RealData::get(&a);
 		    let path : AccessPath = serde_json::from_slice(&a[..]).unwrap();
 			hashmap.insert(path,b);
 		}
-
+*/
 		let fake_data_store = FakeDataStore::new(hashmap);
 		println!("return");
 		fake_data_store

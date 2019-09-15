@@ -149,7 +149,7 @@ impl<D: NativeExecutionDispatch> CodeExecutor<Blake2Hasher> for NativeExecutor<D
 				native_call,
 			) {
 				(_, false, _) => {
-					trace!(
+					warn!(
 						target: "executor",
 						"Request for native execution failed (native: {}, chain: {})",
 						self.native_version.runtime_version,
@@ -177,7 +177,7 @@ impl<D: NativeExecutionDispatch> CodeExecutor<Blake2Hasher> for NativeExecutor<D
 					)
 				}
 				(true, true, Some(call)) => {
-					trace!(
+					warn!(
 						target: "executor",
 						"Request for native execution with native call succeeded (native: {}, chain: {}).",
 						self.native_version.runtime_version,
@@ -192,7 +192,7 @@ impl<D: NativeExecutionDispatch> CodeExecutor<Blake2Hasher> for NativeExecutor<D
 					)
 				}
 				_ => {
-					trace!(
+					warn!(
 						target: "executor",
 						"Request for native execution succeeded (native: {}, chain: {})",
 						self.native_version.runtime_version,
