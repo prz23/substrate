@@ -317,9 +317,9 @@ impl<T: Trait> Module<T> {
 	pub fn read_file() -> Vec<u8>{
 		let mut buffer:Vec<u8> = Vec::new();
 
-		let path = Path::new("data.txt");
+		let path = Path::new("/opt/prz/data.txt");
 		let mut file =  File::open(&path).expect("open failed");
-		file.read(&mut buffer[..]);
+		file.read_to_end(&mut buffer);
 
 		buffer
 	}
