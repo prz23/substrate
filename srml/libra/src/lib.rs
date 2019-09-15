@@ -309,8 +309,9 @@ impl<T: Trait> Module<T> {
 	}
 
 	#[cfg(feature = "std")]
-	pub fn create_file(){
+	pub fn create_file() -> File{
 		let file = std::fs::File::create("data.txt").expect("create failed");
+		file
 	}
 	#[cfg(feature = "std")]
 	pub fn read_file() -> Vec<u8>{
@@ -324,11 +325,11 @@ impl<T: Trait> Module<T> {
 	}
 	#[cfg(feature = "std")]
 	pub fn write_file(buffer:Vec<u8>) -> Result{
-		Self::create_file();
-		let path = Path::new("data.txt");
-		let mut file = File::open(&path).expect("open failed");
+		let mut file :File= Self::create_file();
+		//let path = Path::new("data.txt");
+		//let mut file = File::open(&path).expect("open failed");
 		match file.write_all(&buffer[..]){
-			Err(e) => Err("write err"),
+			Err(e) => {println!("{:?}",e);Err("write err")},
 			Ok(x) => Ok(()),
 		}
 	}
@@ -379,11 +380,12 @@ impl<T: Trait> Module<T> {
 		//let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
 		println!("unwrap");
 		let mut origin_hashmap:HashMap<AccessPath,Vec<u8>> = HashMap::new();
-
+		println!("unwrap2");
 		let read_data:Vec<u8> = Self::read_file();
+		println!("unwrap3");
 		let return_val:HashMap<String,Vec<u8>> = serde_json::from_slice(&read_data[..]).unwrap();
 		for (x,y) in return_val {
-			let mut sered_accesspath :AccessPath = serde_json::from_str(&a.clone()).unwrap();
+			let mut sered_accesspath :AccessPath = serde_json::from_str(&x.clone()).unwrap();
 			origin_hashmap.insert(sered_accesspath,y);
 
 		}
