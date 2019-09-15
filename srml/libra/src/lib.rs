@@ -99,9 +99,19 @@ use std::prelude::v1::Vec;
 use std::collections::HashMap;
 
 
+#[cfg(feature = "std")]
+use std::error::Error;
+#[cfg(feature = "std")]
+use std::fs::File;
+#[cfg(feature = "std")]
+use std::io::prelude::*;
+#[cfg(feature = "std")]
+use std::path::Path;
+
 
 #[cfg(feature = "std")]
 pub type Vechashmap = std::collections::HashMap<AccessPath,Vec<u8>>;
+
 
 
 #[derive(Debug, PartialEq, Eq, Clone, Encode, Decode)]
@@ -131,7 +141,7 @@ decl_storage! {
 
         pub Libra_Hash_Data get(libra_hash_data): map u64 => Vec<u8>;
 
-        pub KeyMap get(key_map) : map u64 => Vec<u8>;
+        pub KeyMap get(key_map) : map u64 => (Vec<u8>,Vec<u8>);
         pub MaxKey get(max_key) : u64 = 0;
 
         pub Key get(key): Vec<(Vec<u8>)>;
@@ -299,31 +309,64 @@ impl<T: Trait> Module<T> {
 	}
 
 	#[cfg(feature = "std")]
+	pub fn create_file(){
+		let file = std::fs::File::create("data.txt").expect("create failed");
+	}
+	#[cfg(feature = "std")]
+	pub fn read_file() -> Vec<u8>{
+		let mut buffer:Vec<u8> = Vec::new();
+
+		let path = Path::new("data.txt");
+		let mut file =  File::open(&path).expect("open failed");
+		file.read(&mut buffer[..]);
+
+		buffer
+	}
+	#[cfg(feature = "std")]
+	pub fn write_file(buffer:Vec<u8>) -> Result{
+		Self::create_file();
+		let path = Path::new("data.txt");
+		let mut file = File::open(&path).expect("open failed");
+		match file.write_all(&buffer[..]){
+			Err(e) => Err("write err"),
+			Ok(x) => Ok(()),
+		}
+	}
+
+/*
+	#[cfg(feature = "std")]
+    pub fn save(key:Vec<u8>,value:Vec<u8>){
+		let path = "rocksdbdata";
+		let db = DB::open_default(path).unwrap();
+		db.put(&key[..], &value[..]).unwrap();
+	}
+*/
+
+	#[cfg(feature = "std")]
 	pub fn hash_map_iter_and_seri(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
 
+		let mut new_hash_map: HashMap<String,Vec<u8>> = HashMap::new();
 
-		let mut all_key_vec:Vec<Vec<u8>> = Vec::new();
-        let mut i = 0u64;
-		for (a,b) in hashmap.into_iter(){
-			let sered_accesspath = serde_json::to_vec(&a.clone()).unwrap();
+		for (a,b) in hashmap{
+			let mut sered_accesspath = serde_json::to_string(&a.clone()).unwrap();
 
 			println!("insert a {:?}",sered_accesspath.clone());
 			println!("insert b {:?}",b.clone());
-//			RealData::insert(&sered_accesspath,&b);
-			KeyMap::insert(i,&sered_accesspath);
-			//Key3::put(sered_accesspath);
+			//RealData::insert(&sered_accesspath,&b);
+			new_hash_map.insert(sered_accesspath.clone(),b.clone());
+
 			//let neirong = NeiRong{ data :sered_accesspath.clone() };
-			i = i + 1;
 
 		}
-		MaxKey::put(i);
-
-		//let finalpro = serde_json::to_vec(&store_vec).unwrap();
-		//Libra_Hash_Map::put(finalpro);
-		//let vslj = vec![00u8];
-		//Libra_Hash_Map::put(vslj);
-		//Libra_Hash_Data::insert(1,finalpro);
+		println!("test1");
+		let new_hash_map_ser = serde_json::to_vec(&new_hash_map.clone()).unwrap();
+		match Self::write_file(new_hash_map_ser.clone()){
+			Err(e) => println!("write fail"),
+			Ok(()) => println!("ok"),
+		}
+		println!("test2");
+		let return_val:HashMap<String,Vec<u8>> = serde_json::from_slice(&new_hash_map_ser[..]).unwrap();
 		println!("hash_map_iter_and_seri");
 	}
 
@@ -335,15 +378,17 @@ impl<T: Trait> Module<T> {
 
 		//let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
 		println!("unwrap");
-		/*
-		let vec_total = Key::get();
-		for a in vec_total {
-		    let b = RealData::get(&a);
-		    let path : AccessPath = serde_json::from_slice(&a[..]).unwrap();
-			hashmap.insert(path,b);
+		let mut origin_hashmap:HashMap<AccessPath,Vec<u8>> = HashMap::new();
+
+		let read_data:Vec<u8> = Self::read_file();
+		let return_val:HashMap<String,Vec<u8>> = serde_json::from_slice(&read_data[..]).unwrap();
+		for (x,y) in return_val {
+			let mut sered_accesspath :AccessPath = serde_json::from_str(&a.clone()).unwrap();
+			origin_hashmap.insert(sered_accesspath,y);
+
 		}
-*/
-		let fake_data_store = FakeDataStore::new(hashmap);
+
+		let fake_data_store = FakeDataStore::new(origin_hashmap);
 		println!("return");
 		fake_data_store
 	}
