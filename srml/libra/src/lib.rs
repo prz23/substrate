@@ -204,8 +204,10 @@ impl<T: Trait> Module<T> {
 		}
 	}
 	#[cfg(feature = "std")]
-	pub fn init_state(){
-
+	pub fn init_state() -> AccountData{
+        let account = Account::fixed_new_account();
+        let accountdata = AccountData::with_account(account.clone(),10000,10);
+		accountdata
 	}
 
 	#[cfg(feature = "std")]
@@ -267,6 +269,11 @@ impl<T: Trait> Module<T> {
 		let mut executor = FakeExecutor::from_genesis_file();
 
 		if Init::get() == true {
+			println!("add gensis account1");
+			let account_id = Self::init_state();
+			println!("add gensis account2");
+			executor.add_account_data(&account_id);
+			println!("add gensis account3");
 			Init::put(false)
 		}else {
 			//deseri store_data
@@ -314,14 +321,14 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn create_file() -> File{
-		let file = std::fs::File::create("/mnt/prz/data.txt").expect("create failed");
+		let file = std::fs::File::create("data.txt").expect("create failed");
 		file
 	}
 	#[cfg(feature = "std")]
 	pub fn read_file() -> Vec<u8>{
 		let mut buffer:Vec<u8> = Vec::new();
 
-		let path = Path::new("/mnt/prz/data.txt");
+		let path = Path::new("/opt/prz/data.txt");
 		let mut file =  File::open(&path).expect("open failed");
 		file.read_to_end(&mut buffer);
 
@@ -352,9 +359,11 @@ impl<T: Trait> Module<T> {
 		let mut new_hash_map: HashMap<String,Vec<u8>> = HashMap::new();
 
 		for (a,b) in hashmap{
+			println!("serde to string");
 			let mut sered_accesspath = serde_json::to_string(&a.clone()).unwrap();
-
-			RealData::insert(&sered_accesspath,&b);
+			println!("serde to vec");
+			let mut vec_to_save = serde_json::to_vec(&a.clone()).unwrap();
+			//RealData::insert(&vec_to_save,&b);
 			new_hash_map.insert(sered_accesspath.clone(),b.clone());
 
 		}
