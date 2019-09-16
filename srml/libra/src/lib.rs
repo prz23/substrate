@@ -203,6 +203,10 @@ impl<T: Trait> Module<T> {
 			Count::put(i+1);
 		}
 	}
+	#[cfg(feature = "std")]
+	pub fn init_state(){
+
+	}
 
 	#[cfg(feature = "std")]
 	fn return_a_tx() -> Vec<u8>{
@@ -254,7 +258,7 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn execute_libra_transaction(txn:Vec<u8>) -> Result{
-		println!("1");
+		println!("start to execute_libra_transaction");
 		//deseri_txns
 		let txn_de : SignedTransaction =  SimpleDeserializer::deserialize(&txn).unwrap();
 	    let txns_de = vec![txn_de];
@@ -310,14 +314,14 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn create_file() -> File{
-		let file = std::fs::File::create("data.txt").expect("create failed");
+		let file = std::fs::File::create("/mnt/prz/data.txt").expect("create failed");
 		file
 	}
 	#[cfg(feature = "std")]
 	pub fn read_file() -> Vec<u8>{
 		let mut buffer:Vec<u8> = Vec::new();
 
-		let path = Path::new("/opt/prz/data.txt");
+		let path = Path::new("/mnt/prz/data.txt");
 		let mut file =  File::open(&path).expect("open failed");
 		file.read_to_end(&mut buffer);
 
@@ -326,10 +330,8 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn write_file(buffer:Vec<u8>) -> Result{
 		let mut file :File= Self::create_file();
-		//let path = Path::new("data.txt");
-		//let mut file = File::open(&path).expect("open failed");
 		match file.write_all(&buffer[..]){
-			Err(e) => {println!("{:?}",e);Err("write err")},
+			Err(e) => { println!("{:?}",e); Err("Write data error")},
 			Ok(x) => Ok(()),
 		}
 	}
@@ -352,37 +354,28 @@ impl<T: Trait> Module<T> {
 		for (a,b) in hashmap{
 			let mut sered_accesspath = serde_json::to_string(&a.clone()).unwrap();
 
-			println!("insert a {:?}",sered_accesspath.clone());
-			println!("insert b {:?}",b.clone());
-			//RealData::insert(&sered_accesspath,&b);
+			RealData::insert(&sered_accesspath,&b);
 			new_hash_map.insert(sered_accesspath.clone(),b.clone());
 
-			//let neirong = NeiRong{ data :sered_accesspath.clone() };
-
 		}
-		println!("test1");
+
 		let new_hash_map_ser = serde_json::to_vec(&new_hash_map.clone()).unwrap();
 		match Self::write_file(new_hash_map_ser.clone()){
 			Err(e) => println!("write fail"),
 			Ok(()) => println!("ok"),
 		}
-		println!("test2");
-		let return_val:HashMap<String,Vec<u8>> = serde_json::from_slice(&new_hash_map_ser[..]).unwrap();
-		println!("hash_map_iter_and_seri");
+		println!("Write Store Data Finished!");
 	}
 
 	#[cfg(feature = "std")]
 	pub fn load_data_back() -> FakeDataStore{
-		println!("start to load data back");
-		//let data = Libra_Hash_Map::get();
+		println!("Start to Load Store Data back!");
 		let mut hashmap = Vechashmap::new();
 
-		//let data2 : Vec<(Vec<u8>,Vec<u8>)> =  serde_json::from_slice(&data[..]).unwrap();
-		println!("unwrap");
 		let mut origin_hashmap:HashMap<AccessPath,Vec<u8>> = HashMap::new();
-		println!("unwrap2");
+		println!("Start to Read File!");
 		let read_data:Vec<u8> = Self::read_file();
-		println!("unwrap3");
+
 		let return_val:HashMap<String,Vec<u8>> = serde_json::from_slice(&read_data[..]).unwrap();
 		for (x,y) in return_val {
 			let mut sered_accesspath :AccessPath = serde_json::from_str(&x.clone()).unwrap();
@@ -391,7 +384,7 @@ impl<T: Trait> Module<T> {
 		}
 
 		let fake_data_store = FakeDataStore::new(origin_hashmap);
-		println!("return");
+		println!("Load Store Data Finished!");
 		fake_data_store
 	}
 
