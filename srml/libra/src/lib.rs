@@ -72,7 +72,8 @@ mod tests;
 #[cfg(feature = "std")]
 use types::{account_address::AccountAddress,
 			transaction::SignedTransaction,
-			access_path::AccessPath};
+			access_path::AccessPath,
+			account_config::AccountResource};
 #[cfg(feature = "std")]
 use executor::*;
 #[cfg(feature = "std")]
@@ -137,7 +138,7 @@ decl_storage! {
 
         pub Count get(count) : u64 = 0;
 
-        pub RealData get(real_data): map  Vec<u8> => Vec<u8>;
+        pub RealData get(real_data): map  Vec<u8> => (u64,u64);
 
         pub Libra_Hash_Data get(libra_hash_data): map u64 => Vec<u8>;
 
@@ -212,7 +213,8 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	fn return_a_tx() -> Vec<u8>{
-		let sender = AccountData::new(1_000_000, 10);
+		//let sender = AccountData::new(1_000_000, 10);
+		let sender = AccountData::with_account(Account::fixed_new_account(),100000,10);
 		let receiver = AccountData::new(100_000, 10);
 		let transfer_amount = 1_000;
 		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
@@ -363,7 +365,10 @@ impl<T: Trait> Module<T> {
 			let mut sered_accesspath = serde_json::to_string(&a.clone()).unwrap();
 			println!("serde to vec");
 			let mut vec_to_save = serde_json::to_vec(&a.clone()).unwrap();
-			//RealData::insert(&vec_to_save,&b);
+			if Self::is_resource_account(&a){
+				let resource:AccountResource = SimpleDeserializer::deserialize(&b).unwrap();
+				RealData::insert(a.address.to_vec(),(resource.balance(),resource.sequence_number()));
+			}
 			new_hash_map.insert(sered_accesspath.clone(),b.clone());
 
 		}
@@ -375,7 +380,15 @@ impl<T: Trait> Module<T> {
 		}
 		println!("Write Store Data Finished!");
 	}
-
+	#[cfg(feature = "std")]
+	pub fn is_resource_account(accesspath: &AccessPath) -> bool {
+        let recover_accesspath = AccessPath::new_for_account(accesspath.address);
+		if *accesspath == recover_accesspath {
+			return true;
+		}else {
+			return false;
+		}
+	}
 	#[cfg(feature = "std")]
 	pub fn load_data_back() -> FakeDataStore{
 		println!("Start to Load Store Data back!");
