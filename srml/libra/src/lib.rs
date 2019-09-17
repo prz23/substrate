@@ -73,7 +73,8 @@ mod tests;
 use types::{account_address::AccountAddress,
 			transaction::SignedTransaction,
 			access_path::AccessPath,
-			account_config::AccountResource};
+			account_config::AccountResource,
+            transaction::TransactionOutput};
 #[cfg(feature = "std")]
 use executor::*;
 #[cfg(feature = "std")]
@@ -108,7 +109,6 @@ use std::fs::File;
 use std::io::prelude::*;
 #[cfg(feature = "std")]
 use std::path::Path;
-use types::transaction::TransactionOutput;
 
 
 #[cfg(feature = "std")]
@@ -290,7 +290,7 @@ impl<T: Trait> Module<T> {
 
 		println!("{:?}",output);
 		// save store_data on substrate
-		Self::store_the_data(&mut executor);
+		Self::store_the_data(&mut executor,output);
 		println!("prz");
 		Ok(())
 	}
