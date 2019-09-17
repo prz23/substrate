@@ -149,6 +149,9 @@ decl_storage! {
         pub Key get(key): Vec<(Vec<u8>)>;
         pub Key2 get(key2): Vec<NeiRong>;
         pub Key3 get(key3): Vec<u8>;
+
+        pub Balance get(balance): map Vec<u8> => u64;
+        pub Sequence get(sequence): map Vec<u8> => u64;
 	}
 }
 
@@ -173,8 +176,8 @@ decl_module! {
         }
 
 	    fn on_finalize() {
-	        #[cfg(feature = "std")]
-	        Self::make_libra_transaction();
+//	        #[cfg(feature = "std")]
+//	        Self::make_libra_transaction();
 
 		}
 
@@ -208,17 +211,17 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn init_state() -> AccountData{
         let account = Account::fixed_new_account();
-        let accountdata = AccountData::with_account(account.clone(),10000,10);
+        let accountdata = AccountData::with_account(account.clone(),1000_000_000,0);
 		accountdata
 	}
 
 	#[cfg(feature = "std")]
 	fn return_a_tx() -> Vec<u8>{
 		//let sender = AccountData::new(1_000_000, 10);
-		let sender = AccountData::with_account(Account::fixed_new_account(),100000,10);
-		let receiver = AccountData::new(100_000, 10);
+		let sender = AccountData::with_account(Account::fixed_new_account(),100000,0);
+		let receiver = AccountData::new(100_000, 0);
 		let transfer_amount = 1_000;
-		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 10, transfer_amount);
+		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 0, transfer_amount);
 		let vec:Vec<u8> = SimpleSerializer::serialize(&txn).unwrap();
 		vec
 	}
@@ -327,14 +330,14 @@ impl<T: Trait> Module<T> {
 
 	#[cfg(feature = "std")]
 	pub fn create_file() -> File{
-		let file = std::fs::File::create("data.txt").expect("create failed");
+		let file = std::fs::File::create("/tmp/data.txt").expect("create failed");
 		file
 	}
 	#[cfg(feature = "std")]
 	pub fn read_file() -> Vec<u8>{
 		let mut buffer:Vec<u8> = Vec::new();
 
-		let path = Path::new("/opt/prz/data.txt");
+		let path = Path::new("/tmp/data.txt");
 		let mut file =  File::open(&path).expect("open failed");
 		file.read_to_end(&mut buffer);
 
@@ -371,7 +374,10 @@ impl<T: Trait> Module<T> {
 			let mut vec_to_save = serde_json::to_vec(&a.clone()).unwrap();
 			if Self::is_resource_account(&a){
 				let resource:AccountResource = SimpleDeserializer::deserialize(&b).unwrap();
-				RealData::insert(a.address.to_vec(),(resource.balance(),resource.sequence_number()));
+                println!("address:{:?}, balance:{}, sequence:{}", a.address, resource.balance(),resource.sequence_number());
+//				RealData::insert(a.address.to_vec(),resource.balance());
+                Balance::insert(a.address.to_vec(), resource.balance());
+                Sequence::insert(a.address.to_vec(), resource.sequence_number());
 			}
 			new_hash_map.insert(sered_accesspath.clone(),b.clone());
 
