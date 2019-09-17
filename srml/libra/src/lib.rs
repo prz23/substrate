@@ -108,6 +108,7 @@ use std::fs::File;
 use std::io::prelude::*;
 #[cfg(feature = "std")]
 use std::path::Path;
+use types::transaction::TransactionOutput;
 
 
 #[cfg(feature = "std")]
@@ -295,8 +296,11 @@ impl<T: Trait> Module<T> {
 	}
 
 	#[cfg(feature = "std")]
-	pub fn store_the_data(executor: &mut FakeExecutor){
+	pub fn store_the_data(executor: &mut FakeExecutor,outputs:Vec<TransactionOutput>){
 		let mut data_store = executor.get_data_store();
+		for output in outputs {
+			data_store.add_write_set(output.write_set());
+		}
 		Self::hash_map_iter_and_seri(&mut data_store);
 	}
 
