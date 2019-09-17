@@ -275,11 +275,8 @@ impl<T: Trait> Module<T> {
 		let mut executor = FakeExecutor::from_genesis_file();
 
 		if Init::get() == true {
-			println!("add gensis account1");
 			let account_id = Self::init_state();
-			println!("add gensis account2");
 			executor.add_account_data(&account_id);
-			println!("add gensis account3");
 			Init::put(false)
 		}else {
 			//deseri store_data
@@ -294,7 +291,6 @@ impl<T: Trait> Module<T> {
 		println!("{:?}",output);
 		// save store_data on substrate
 		Self::store_the_data(&mut executor,output);
-		println!("prz");
 		Ok(())
 	}
 
@@ -310,7 +306,6 @@ impl<T: Trait> Module<T> {
 	#[cfg(feature = "std")]
 	pub fn save_data(store:&mut FakeDataStore){
 		let hashmap = store.get_hash_map();
-        println!("start to seri");
 		let sered = serde_json::to_vec(&hashmap).unwrap();
 		StoreData::put(&sered);
 	}
@@ -325,7 +320,6 @@ impl<T: Trait> Module<T> {
 		}
 
 		//Libra_Hash_Map::put(finalpro);
-		println!("hash_map_iter_and_seri");
 	}
 
 	#[cfg(feature = "std")]
@@ -368,9 +362,7 @@ impl<T: Trait> Module<T> {
 		let mut new_hash_map: HashMap<String,Vec<u8>> = HashMap::new();
 
 		for (a,b) in hashmap{
-			println!("serde to string");
 			let mut sered_accesspath = serde_json::to_string(&a.clone()).unwrap();
-			println!("serde to vec");
 			let mut vec_to_save = serde_json::to_vec(&a.clone()).unwrap();
 			if Self::is_resource_account(&a){
 				let resource:AccountResource = SimpleDeserializer::deserialize(&b).unwrap();
