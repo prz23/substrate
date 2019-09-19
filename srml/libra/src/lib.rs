@@ -75,10 +75,9 @@ use types::{account_address::AccountAddress,
 			access_path::AccessPath,
 			account_config::AccountResource,
             transaction::TransactionOutput};
+
 #[cfg(feature = "std")]
-use executor::*;
-#[cfg(feature = "std")]
-use config::config::VMConfig;
+use config::config::{VMConfig,VMPublishingOption};
 #[cfg(feature = "std")]
 use vm_runtime::MoveVM;
 
@@ -210,7 +209,7 @@ impl<T: Trait> Module<T> {
 	}
 	#[cfg(feature = "std")]
 	pub fn init_state() -> AccountData{
-        let account = Account::fixed_new_account();
+        let account = Account::assoc_new_account();
         let accountdata = AccountData::with_account(account.clone(),1000_000_000,0);
 		accountdata
 	}
@@ -222,6 +221,11 @@ impl<T: Trait> Module<T> {
 		let receiver = AccountData::new(100_000, 0);
 		let transfer_amount = 1_000;
 		let txn = peer_to_peer_txn(sender.account(), receiver.account(), 0, transfer_amount);
+		let vec:Vec<u8> = SimpleSerializer::serialize(&txn).unwrap();
+		vec
+	}
+	#[cfg(feature = "std")]
+	pub fn serialize_a_txn(txn:SignedTransaction) -> Vec<u8> {
 		let vec:Vec<u8> = SimpleSerializer::serialize(&txn).unwrap();
 		vec
 	}
@@ -263,6 +267,28 @@ impl<T: Trait> Module<T> {
 
         }
 */
+	#[cfg(feature = "std")]
+	pub fn contract_test(account: AccountData) -> SignedTransaction {
+		//let sender = AccountData::new(1_000_000, 10);
+
+		let program = String::from(
+			"
+        modules:
+        module M {
+        }
+        script:
+        main () {
+            return;
+        }",
+		);
+
+		let random_script = compile_program_with_address(account.address(), &program, vec![]);;
+		let txn =
+			account
+				.account()
+				.create_signed_txn_impl(*account.address(), random_script, 0, 100_000, 1);
+		txn
+	}
 
 	#[cfg(feature = "std")]
 	pub fn execute_libra_transaction(txn:Vec<u8>) -> Result{
@@ -272,7 +298,7 @@ impl<T: Trait> Module<T> {
 	    let txns_de = vec![txn_de];
 
 		// init executor
-		let mut executor = FakeExecutor::from_genesis_file();
+		let mut executor = FakeExecutor::from_genesis_with_options(VMPublishingOption::Open);
 
 		if Init::get() == true {
 			let account_id = Self::init_state();
@@ -429,7 +455,7 @@ impl<T: Trait> Module<T> {
 	}
 
 	#[cfg(feature = "std")]
-	pub fn move_contratc_generate_signedtx() -> SignedTransaction {
+	pub fn move_contratc_generate_signedtx(){
 		let mut executor = FakeExecutor::from_genesis_file();
 		let sender = AccountData::new(1_000_000, 10);
 		executor.add_account_data(&sender);
@@ -454,7 +480,8 @@ impl<T: Trait> Module<T> {
 
 		let random_script = compile_program_with_address(sender.address(), &program, vec![]);
 		let txn = sender.account().create_signed_txn_impl(*sender.address(), random_script, 10, 100_000, 1);
-	    txn
+		let output = executor.execute_transaction(txn);
+		println!("{:?}",output);
 	}
 
 

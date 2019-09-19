@@ -58,3 +58,14 @@ fn access_test() {
 		println!("end");
 	});
 }
+
+#[test]
+fn contract_test() {
+	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
+        let acc = Aura::init_state();
+		let txn = Aura::contract_test(acc);
+		let txn_ser = Aura::serialize_a_txn(txn);
+		Aura::execute_libra_transaction(txn_ser);
+		println!("end");
+	});
+}
