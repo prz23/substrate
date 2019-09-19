@@ -68,13 +68,12 @@ use substrate_consensus_aura_primitives::{AURA_ENGINE_ID, ConsensusLog, Authorit
 mod mock;
 mod tests;
 
-
 #[cfg(feature = "std")]
 use types::{account_address::AccountAddress,
 			transaction::SignedTransaction,
 			access_path::AccessPath,
 			account_config::AccountResource,
-            transaction::TransactionOutput};
+            transaction::{TransactionOutput,} };
 
 #[cfg(feature = "std")]
 use config::config::{VMConfig,VMPublishingOption};
@@ -84,12 +83,15 @@ use vm_runtime::MoveVM;
 #[cfg(feature = "std")]
 use language_e2e_tests::{
 	account::{AccountData,Account},
-	common_transactions::{peer_to_peer_txn,create_account_txn,mint_txn},
+	common_transactions::{peer_to_peer_txn,create_account_txn,mint_txn,},
 	executor::FakeExecutor,
 	data_store::FakeDataStore,
 	data_store::GetHashMap,
-	compile::compile_program_with_address,
+	compile::{compile_program_with_address,compile_program_with_address_return_deps,
+			  compile_program_with_address_with_deps},
 };
+#[cfg(feature = "std")]
+use bytecode_verifier::{VerifiedModule};
 #[cfg(feature = "std")]
 use canonical_serialization::*;
 #[cfg(feature = "std")]
@@ -98,8 +100,8 @@ use serde_json;
 use std::prelude::v1::Vec;
 #[cfg(feature = "std")]
 use std::collections::HashMap;
-
-
+#[cfg(feature = "std")]
+use vm::CompiledModule;
 #[cfg(feature = "std")]
 use std::error::Error;
 #[cfg(feature = "std")]
@@ -213,6 +215,12 @@ impl<T: Trait> Module<T> {
         let accountdata = AccountData::with_account(account.clone(),1000_000_000,0);
 		accountdata
 	}
+	#[cfg(feature = "std")]
+	pub fn create_a_new_account() -> AccountData{
+		let account = Account::new();
+		let accountdata = AccountData::with_account(account.clone(),1000_000_000,0);
+		accountdata
+	}
 
 	#[cfg(feature = "std")]
 	fn return_a_tx() -> Vec<u8>{
@@ -268,21 +276,18 @@ impl<T: Trait> Module<T> {
         }
 */
 	#[cfg(feature = "std")]
-	pub fn contract_test(account: AccountData) -> SignedTransaction {
-		//let sender = AccountData::new(1_000_000, 10);
+	pub fn call_contract_test(account:AccountData,deps:Vec<VerifiedModule>,deps2:Vec<CompiledModule>) -> SignedTransaction {
 
 		let program = String::from(
 			"
-        modules:
-        module M {
-        }
-        script:
-        main () {
-            return;
-        }",
-		);
+			import 0x000000000000000000000000000000000000000000000000000000000a550c18.M;
 
-		let random_script = compile_program_with_address(account.address(), &program, vec![]);;
+            main () {
+                M.prz();
+                return;
+            }",
+		);
+		let random_script = compile_program_with_address_with_deps(account.address(), &program, vec![],deps2);
 		let txn =
 			account
 				.account()
@@ -290,6 +295,47 @@ impl<T: Trait> Module<T> {
 		txn
 	}
 
+
+	#[cfg(feature = "std")]
+	pub fn contract_test(account: AccountData) -> (SignedTransaction,Vec<VerifiedModule>,Vec<CompiledModule>) {
+		//let sender = AccountData::new(1_000_000, 10);
+
+		let program = String::from(
+			"
+        modules:
+        module M {
+             public sum(a:u64,b:u64):u64{
+                let c:u64;
+                c = copy(a) + copy(b);
+                return copy(c);
+             }
+            public prz(){ return;}
+        }
+        script:
+        main () {
+            return;
+        }",
+		);
+
+		let (random_script,yl,yl2) = compile_program_with_address_return_deps(account.address(), &program, vec![]);;
+		let txn =
+			account
+				.account()
+				.create_signed_txn_impl(*account.address(), random_script, 0, 100_000, 1);
+		(txn,yl,yl2)
+	}
+	#[cfg(feature = "std")]
+	pub fn set_account(acc:AccountData){
+		// init executor
+		let mut executor = FakeExecutor::from_genesis_with_options(VMPublishingOption::Open);
+		//deseri store_data
+		let stored_data :FakeDataStore = Self::load_data_back();
+		// load store_data
+		executor.set_up_data_store(stored_data);
+		executor.add_account_data(&acc);
+		//save back
+		Self::store_the_data(&mut executor,vec![]);
+	}
 	#[cfg(feature = "std")]
 	pub fn execute_libra_transaction(txn:Vec<u8>) -> Result{
 		println!("start to execute_libra_transaction");
@@ -303,12 +349,16 @@ impl<T: Trait> Module<T> {
 		if Init::get() == true {
 			let account_id = Self::init_state();
 			executor.add_account_data(&account_id);
+			let account_id2 = Self::create_a_new_account();
+			executor.add_account_data(&account_id2);
+            println!("a");
 			Init::put(false)
 		}else {
 			//deseri store_data
 			let stored_data :FakeDataStore = Self::load_data_back();
 			// load store_data
 			executor.set_up_data_store(stored_data);
+			println!("b");
 		}
 
 		// execute block of transcations

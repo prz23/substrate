@@ -62,10 +62,22 @@ fn access_test() {
 #[test]
 fn contract_test() {
 	with_externalities(&mut new_test_ext(vec![0, 1, 2, 3]), || {
+		println!("depoly a contratc start");
         let acc = Aura::init_state();
-		let txn = Aura::contract_test(acc);
+		let (txn,yl,yl2) = Aura::contract_test(acc);
 		let txn_ser = Aura::serialize_a_txn(txn);
 		Aura::execute_libra_transaction(txn_ser);
+		println!("depoly a contratc");
+
+		println!("a");
+		let new_acc = Aura::create_a_new_account();
+		Aura::set_account(new_acc.clone());
+		println!("b");
+		let call_txn = Aura::call_contract_test(new_acc,yl,yl2);
+		println!("c");
+		let call_txn_ser = Aura::serialize_a_txn(call_txn);
+		println!("d");
+		Aura::execute_libra_transaction(call_txn_ser);
 		println!("end");
 	});
 }
