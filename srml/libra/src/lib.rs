@@ -73,7 +73,8 @@ use types::{account_address::AccountAddress,
 			transaction::SignedTransaction,
 			access_path::AccessPath,
 			account_config::AccountResource,
-            transaction::{TransactionOutput,} };
+            transaction::{TransactionOutput,},
+            language_storage::ModuleId};
 
 #[cfg(feature = "std")]
 use config::config::{VMConfig,VMPublishingOption};
@@ -275,6 +276,27 @@ impl<T: Trait> Module<T> {
 
         }
 */
+	#[cfg(feature = "std")]
+	pub fn get_module(key:AccessPath) -> Vec<CompiledModule>{
+		// init executor
+		let mut executor = FakeExecutor::from_genesis_with_options(VMPublishingOption::Open);
+		//deseri store_data
+		let mut stored_data :FakeDataStore = Self::load_data_back();
+		let hashmap = stored_data.get_hash_map();
+		let module = hashmap.get(&key).unwrap();
+		let cpm : CompiledModule = CompiledModule::deserialize(module).unwrap();
+		vec![cpm]
+	}
+
+	#[cfg(feature = "std")]
+	pub fn get_compiled_module() -> AccessPath{
+		let module = ModuleId::new(AccountAddress::from_hex_literal("0x000000000000000000000000000000000000000000000000000000000a550c18").unwrap_or_default(),
+								   String::from("M"));
+        let accpath :AccessPath = AccessPath::from(&module);
+		println!("{:?}",accpath);
+		accpath
+	}
+
 	#[cfg(feature = "std")]
 	pub fn call_contract_test(account:AccountData,deps:Vec<VerifiedModule>,deps2:Vec<CompiledModule>) -> SignedTransaction {
 
